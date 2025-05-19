@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAnalysis } from '../../context/AnalysisContext';
 import { Settings, AlertTriangle, Info } from 'lucide-react';
+import PropChallengeSimulator from './PropChallengeSimulator';
 
 const PropFirmSettings = () => {
   const { analysisState, setPropFirmSettings, setBrokerSettings } = useAnalysis();
@@ -10,6 +11,7 @@ const PropFirmSettings = () => {
   const [profitTarget, setProfitTarget] = useState(8);
   const [broker, setBroker] = useState('Custom');
   const [customSpread, setCustomSpread] = useState(1);
+  const [activeTab, setActiveTab] = useState<'settings' | 'simulator'>('settings');
 
   const brokers = [
     { name: 'Custom', defaultSpread: 1, maxDailyDD: 2, overallDD: 5, target: 8 },
@@ -86,100 +88,129 @@ const PropFirmSettings = () => {
 
       {isEnabled && (
         <div className="space-y-4 bg-card-foreground/5 p-4 rounded-lg">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Prop Firm
-            </label>
-            <select
-              value={broker}
-              onChange={(e) => handleBrokerChange(e.target.value)}
-              className="input"
+          <div className="flex space-x-2 mb-4">
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`px-3 py-1 text-sm rounded-md ${
+                activeTab === 'settings'
+                  ? 'bg-primary text-white'
+                  : 'bg-secondary/10 hover:bg-secondary/20'
+              }`}
             >
-              {brokers.map((b) => (
-                <option key={b.name} value={b.name}>{b.name}</option>
-              ))}
-            </select>
-            <p className="mt-1 text-xs text-foreground/70 flex items-center">
-              <Info size={12} className="mr-1" />
-              Only trusted prop firms with verified payout history are listed
-            </p>
+              Settings
+            </button>
+            <button
+              onClick={() => setActiveTab('simulator')}
+              className={`px-3 py-1 text-sm rounded-md ${
+                activeTab === 'simulator'
+                  ? 'bg-primary text-white'
+                  : 'bg-secondary/10 hover:bg-secondary/20'
+              }`}
+            >
+              Challenge Simulator
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Max Daily Drawdown (%)
-              </label>
-              <input
-                type="number"
-                value={maxDailyDrawdown}
-                onChange={(e) => setMaxDailyDrawdown(Number(e.target.value))}
-                onBlur={handleSettingsChange}
-                className="input"
-                min="0"
-                max="100"
-                step="0.1"
-                disabled={broker !== 'Custom'}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Overall Drawdown (%)
-              </label>
-              <input
-                type="number"
-                value={overallDrawdown}
-                onChange={(e) => setOverallDrawdown(Number(e.target.value))}
-                onBlur={handleSettingsChange}
-                className="input"
-                min="0"
-                max="100"
-                step="0.1"
-                disabled={broker !== 'Custom'}
-              />
-            </div>
-          </div>
+          {activeTab === 'settings' ? (
+            <>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Prop Firm
+                </label>
+                <select
+                  value={broker}
+                  onChange={(e) => handleBrokerChange(e.target.value)}
+                  className="input"
+                >
+                  {brokers.map((b) => (
+                    <option key={b.name} value={b.name}>{b.name}</option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-foreground/70 flex items-center">
+                  <Info size={12} className="mr-1" />
+                  Only trusted prop firms with verified payout history are listed
+                </p>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Profit Target (%)
-              </label>
-              <input
-                type="number"
-                value={profitTarget}
-                onChange={(e) => setProfitTarget(Number(e.target.value))}
-                onBlur={handleSettingsChange}
-                className="input"
-                min="0"
-                max="100"
-                step="0.1"
-                disabled={broker !== 'Custom'}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Average Spread (pips)
-              </label>
-              <input
-                type="number"
-                value={customSpread}
-                onChange={(e) => handleSpreadChange(Number(e.target.value))}
-                className="input"
-                min="0"
-                step="0.1"
-                disabled={broker !== 'Custom'}
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Max Daily Drawdown (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={maxDailyDrawdown}
+                    onChange={(e) => setMaxDailyDrawdown(Number(e.target.value))}
+                    onBlur={handleSettingsChange}
+                    className="input"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    disabled={broker !== 'Custom'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Overall Drawdown (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={overallDrawdown}
+                    onChange={(e) => setOverallDrawdown(Number(e.target.value))}
+                    onBlur={handleSettingsChange}
+                    className="input"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    disabled={broker !== 'Custom'}
+                  />
+                </div>
+              </div>
 
-          <div className="flex items-start p-3 bg-warning/10 text-warning rounded-md">
-            <AlertTriangle size={18} className="mr-2 mt-0.5" />
-            <p className="text-sm">
-              Signals will be filtered based on prop firm rules. Only trades with R:R {'>'} 1.5 
-              and risk per trade ≤ 1% will be shown.
-            </p>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Profit Target (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={profitTarget}
+                    onChange={(e) => setProfitTarget(Number(e.target.value))}
+                    onBlur={handleSettingsChange}
+                    className="input"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    disabled={broker !== 'Custom'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Average Spread (pips)
+                  </label>
+                  <input
+                    type="number"
+                    value={customSpread}
+                    onChange={(e) => handleSpreadChange(Number(e.target.value))}
+                    className="input"
+                    min="0"
+                    step="0.1"
+                    disabled={broker !== 'Custom'}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-start p-3 bg-warning/10 text-warning rounded-md">
+                <AlertTriangle size={18} className="mr-2 mt-0.5" />
+                <p className="text-sm">
+                  Signals will be filtered based on prop firm rules. Only trades with R:R {'>'} 1.5 
+                  and risk per trade ≤ 1% will be shown.
+                </p>
+              </div>
+            </>
+          ) : (
+            <PropChallengeSimulator />
+          )}
         </div>
       )}
     </div>
