@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart2, Calendar, TrendingUp, Brain, CheckCircle, Clock, ArrowDown } from 'lucide-react';
+import EquityCurveChart from './EquityCurveChart';
 
 type SimulationResult = {
   passProbability: number;
@@ -8,7 +9,7 @@ type SimulationResult = {
   recommendedMinRR: number;
   equityCurves: number[][];
   daysToPassDistribution: number[];
-  medianEquityCurve: number[];
+  medianEquityCurveIndex: number;
 };
 
 const PropChallengeSimulator = () => {
@@ -34,14 +35,13 @@ const PropChallengeSimulator = () => {
                     strategyType === 'balanced' ? 2.5 : 3;
 
     const curves: number[][] = [];
-    const allCurves: number[][] = [];
     const daysToPass: number[] = [];
     let totalPasses = 0;
     const simulations = 1000;
 
     for (let i = 0; i < simulations; i++) {
       let equity = startingBalance;
-      const curve = [equity];
+      const curve = [0]; // Start at 0% change
       let passed = false;
       let maxDrawdown = 0;
 
@@ -56,7 +56,7 @@ const PropChallengeSimulator = () => {
         }
         
         equity += dailyPnL;
-        curve.push(equity);
+        curve.push(((equity - startingBalance) / startingBalance) * 100);
 
         const drawdown = (startingBalance - equity) / startingBalance * 100;
         maxDrawdown = Math.max(maxDrawdown, drawdown);
@@ -70,16 +70,14 @@ const PropChallengeSimulator = () => {
         if (drawdown > 5) break;
       }
 
-      allCurves.push(curve);
       if (curves.length < 15) curves.push(curve);
     }
 
-    // Calculate median equity curve
-    const medianCurve = Array(remainingDays + 1).fill(0).map((_, dayIndex) => {
-      const dayValues = allCurves.map(curve => curve[dayIndex] || curve[curve.length - 1]);
-      dayValues.sort((a, b) => a - b);
-      return dayValues[Math.floor(dayValues.length / 2)];
-    });
+    // Find the median curve index
+    const finalReturns = curves.map(curve => curve[curve.length - 1]);
+    const sortedReturns = [...finalReturns].sort((a, b) => a - b);
+    const medianReturn = sortedReturns[Math.floor(finalReturns.length / 2)];
+    const medianCurveIndex = finalReturns.indexOf(medianReturn);
 
     setSimulationResult({
       passProbability: (totalPasses / simulations) * 100,
@@ -89,7 +87,7 @@ const PropChallengeSimulator = () => {
       recommendedMinRR: 1.8,
       equityCurves: curves,
       daysToPassDistribution: daysToPass,
-      medianEquityCurve: medianCurve
+      medianEquityCurveIndex: medianCurveIndex
     });
   };
 
@@ -222,94 +220,10 @@ const PropChallengeSimulator = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="border border-border rounded-lg p-4">
               <h3 className="text-md font-medium mb-4">Sample Equity Curves</h3>
-              <div className="h-64 relative">
-                {/* Background grid */}
-                <div className="absolute inset-0 grid grid-cols-4 grid-rows-4">
-                  {Array.from({ length: 16 }).map((_, i) => (
-                    <div key={i} className="border border-border/10"></div>
-                  ))}
-                </div>
-
-                {/* Sample curves */}
-                {simulationResult.equityCurves.map((curve, i) => (
-                  <div key={i} className="absolute inset-0">
-                    <svg
-                      viewBox={`0 0 ${remainingDays} 100`}
-                      className="w-full h-full"
-                      preserveAspectRatio="none"
-                    >
-                      <path
-                        d={`M 0 ${100 - (curve[0] / startingBalance) * 100} ${curve
-                          .slice(1)
-                          .map(
-                            (value, index) =>
-                              `L ${((index + 1) / remainingDays) * remainingDays} ${
-                                100 - (value / startingBalance) * 100
-                              }`
-                          )
-                          .join(' ')}`}
-                        fill="none"
-                        stroke={curve[curve.length - 1] > startingBalance ? '#10B981' : '#EF4444'}
-                        strokeWidth="1"
-                        strokeOpacity="0.4"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </svg>
-                  </div>
-                ))}
-
-                {/* Median curve */}
-                <div className="absolute inset-0">
-                  <svg
-                    viewBox={`0 0 ${remainingDays} 100`}
-                    className="w-full h-full"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d={`M 0 ${100 - (simulationResult.medianEquityCurve[0] / startingBalance) * 100} ${
-                        simulationResult.medianEquityCurve
-                          .slice(1)
-                          .map(
-                            (value, index) =>
-                              `L ${((index + 1) / remainingDays) * remainingDays} ${
-                                100 - (value / startingBalance) * 100
-                              }`
-                          )
-                          .join(' ')
-                      }`}
-                      fill="none"
-                      stroke="#0EA5E9"
-                      strokeWidth="2"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </svg>
-                </div>
-
-                {/* Axes */}
-                <div className="absolute inset-0 border-b border-l border-border"></div>
-                
-                {/* Labels */}
-                <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-foreground/70">
-                  <span>Day 1</span>
-                  <span>Day {remainingDays}</span>
-                </div>
-                <div className="absolute -left-12 top-0 bottom-0 flex flex-col justify-between text-xs text-foreground/70">
-                  <span>+10%</span>
-                  <span>0%</span>
-                  <span>-5%</span>
-                </div>
-              </div>
-              
-              <div className="mt-4 flex items-center justify-center space-x-4 text-sm">
-                <div className="flex items-center">
-                  <div className="w-3 h-0.5 bg-primary mr-2"></div>
-                  <span>Median Path</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-0.5 bg-success opacity-40 mr-2"></div>
-                  <span>Sample Runs</span>
-                </div>
-              </div>
+              <EquityCurveChart 
+                curves={simulationResult.equityCurves}
+                medianCurveIndex={simulationResult.medianEquityCurveIndex}
+              />
             </div>
 
             <div className="border border-border rounded-lg p-4">
