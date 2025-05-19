@@ -8,6 +8,7 @@ type SimulationResult = {
   recommendedMinRR: number;
   equityCurves: number[][];
   daysToPassDistribution: number[];
+  medianEquityCurve: number[];
 };
 
 const PropChallengeSimulator = () => {
@@ -18,13 +19,11 @@ const PropChallengeSimulator = () => {
   const [strategyType, setStrategyType] = useState<'conservative' | 'balanced' | 'aggressive'>('balanced');
   const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
 
-  // Run simulation when inputs change
   useEffect(() => {
     runSimulation();
   }, [startingBalance, challengeDuration, remainingDays, tradesPerDay, strategyType]);
 
   const runSimulation = () => {
-    // Mock simulation logic - in real app would be more sophisticated
     const winRate = strategyType === 'conservative' ? 0.65 : 
                    strategyType === 'balanced' ? 0.55 : 0.45;
     
@@ -34,8 +33,8 @@ const PropChallengeSimulator = () => {
     const rrRatio = strategyType === 'conservative' ? 2 : 
                     strategyType === 'balanced' ? 2.5 : 3;
 
-    // Generate sample equity curves
     const curves: number[][] = [];
+    const allCurves: number[][] = [];
     const daysToPass: number[] = [];
     let totalPasses = 0;
     const simulations = 1000;
@@ -68,11 +67,19 @@ const PropChallengeSimulator = () => {
           daysToPass.push(day);
         }
 
-        if (drawdown > 5) break; // Failed drawdown limit
+        if (drawdown > 5) break;
       }
 
-      if (curves.length < 5) curves.push(curve);
+      allCurves.push(curve);
+      if (curves.length < 15) curves.push(curve);
     }
+
+    // Calculate median equity curve
+    const medianCurve = Array(remainingDays + 1).fill(0).map((_, dayIndex) => {
+      const dayValues = allCurves.map(curve => curve[dayIndex] || curve[curve.length - 1]);
+      dayValues.sort((a, b) => a - b);
+      return dayValues[Math.floor(dayValues.length / 2)];
+    });
 
     setSimulationResult({
       passProbability: (totalPasses / simulations) * 100,
@@ -81,8 +88,17 @@ const PropChallengeSimulator = () => {
       maxDrawdown: 5,
       recommendedMinRR: 1.8,
       equityCurves: curves,
-      daysToPassDistribution: daysToPass
+      daysToPassDistribution: daysToPass,
+      medianEquityCurve: medianCurve
     });
+  };
+
+  const getDistributionPeak = (distribution: number[]) => {
+    const counts = Array(remainingDays).fill(0);
+    distribution.forEach(day => counts[day - 1]++);
+    const maxCount = Math.max(...counts);
+    const peakDay = counts.indexOf(maxCount) + 1;
+    return { peakDay, count: maxCount };
   };
 
   return (
@@ -207,17 +223,16 @@ const PropChallengeSimulator = () => {
             <div className="border border-border rounded-lg p-4">
               <h3 className="text-md font-medium mb-4">Sample Equity Curves</h3>
               <div className="h-64 relative">
+                {/* Background grid */}
+                <div className="absolute inset-0 grid grid-cols-4 grid-rows-4">
+                  {Array.from({ length: 16 }).map((_, i) => (
+                    <div key={i} className="border border-border/10"></div>
+                  ))}
+                </div>
+
+                {/* Sample curves */}
                 {simulationResult.equityCurves.map((curve, i) => (
-                  <div
-                    key={i}
-                    className="absolute inset-0"
-                    style={{
-                      background: `linear-gradient(to right, transparent, ${
-                        curve[curve.length - 1] > startingBalance ? '#10B981' : '#EF4444'
-                      }, transparent)`,
-                      opacity: 0.1
-                    }}
-                  >
+                  <div key={i} className="absolute inset-0">
                     <svg
                       viewBox={`0 0 ${remainingDays} 100`}
                       className="w-full h-full"
@@ -236,12 +251,64 @@ const PropChallengeSimulator = () => {
                         fill="none"
                         stroke={curve[curve.length - 1] > startingBalance ? '#10B981' : '#EF4444'}
                         strokeWidth="1"
+                        strokeOpacity="0.4"
                         vectorEffect="non-scaling-stroke"
                       />
                     </svg>
                   </div>
                 ))}
+
+                {/* Median curve */}
+                <div className="absolute inset-0">
+                  <svg
+                    viewBox={`0 0 ${remainingDays} 100`}
+                    className="w-full h-full"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d={`M 0 ${100 - (simulationResult.medianEquityCurve[0] / startingBalance) * 100} ${
+                        simulationResult.medianEquityCurve
+                          .slice(1)
+                          .map(
+                            (value, index) =>
+                              `L ${((index + 1) / remainingDays) * remainingDays} ${
+                                100 - (value / startingBalance) * 100
+                              }`
+                          )
+                          .join(' ')
+                      }`}
+                      fill="none"
+                      stroke="#0EA5E9"
+                      strokeWidth="2"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
+                </div>
+
+                {/* Axes */}
                 <div className="absolute inset-0 border-b border-l border-border"></div>
+                
+                {/* Labels */}
+                <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-foreground/70">
+                  <span>Day 1</span>
+                  <span>Day {remainingDays}</span>
+                </div>
+                <div className="absolute -left-12 top-0 bottom-0 flex flex-col justify-between text-xs text-foreground/70">
+                  <span>+10%</span>
+                  <span>0%</span>
+                  <span>-5%</span>
+                </div>
+              </div>
+              
+              <div className="mt-4 flex items-center justify-center space-x-4 text-sm">
+                <div className="flex items-center">
+                  <div className="w-3 h-0.5 bg-primary mr-2"></div>
+                  <span>Median Path</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-0.5 bg-success opacity-40 mr-2"></div>
+                  <span>Sample Runs</span>
+                </div>
               </div>
             </div>
 
@@ -249,21 +316,53 @@ const PropChallengeSimulator = () => {
               <h3 className="text-md font-medium mb-4">Days to Pass Distribution</h3>
               <div className="h-64 relative">
                 {simulationResult.daysToPassDistribution.length > 0 ? (
-                  <div className="flex items-end h-full space-x-1">
-                    {Array.from({ length: remainingDays }).map((_, day) => {
-                      const count = simulationResult.daysToPassDistribution.filter(
-                        d => d === day + 1
-                      ).length;
-                      const height = (count / simulationResult.daysToPassDistribution.length) * 100;
-                      return (
-                        <div
-                          key={day}
-                          className="flex-1 bg-primary/20"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                      );
-                    })}
-                  </div>
+                  <>
+                    <div className="flex items-end h-full space-x-0.5">
+                      {Array.from({ length: remainingDays }).map((_, day) => {
+                        const count = simulationResult.daysToPassDistribution.filter(
+                          d => d === day + 1
+                        ).length;
+                        const height = (count / simulationResult.daysToPassDistribution.length) * 100;
+                        const { peakDay } = getDistributionPeak(simulationResult.daysToPassDistribution);
+                        const isPeak = day + 1 === peakDay;
+                        
+                        return (
+                          <div
+                            key={day}
+                            className={`flex-1 transition-all hover:opacity-80 ${
+                              isPeak ? 'bg-primary' : 'bg-primary/20'
+                            }`}
+                            style={{ height: `${height}%` }}
+                          >
+                            {isPeak && (
+                              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-primary">
+                                Peak: Day {peakDay}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Mean day marker */}
+                    <div 
+                      className="absolute bottom-0 w-0.5 bg-success h-full"
+                      style={{ 
+                        left: `${(simulationResult.avgDaysToTarget / remainingDays) * 100}%`,
+                        opacity: 0.5
+                      }}
+                    >
+                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-success">
+                        Mean: Day {simulationResult.avgDaysToTarget.toFixed(1)}
+                      </div>
+                    </div>
+
+                    {/* Axes labels */}
+                    <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-foreground/70">
+                      <span>Day 1</span>
+                      <span>Day {remainingDays}</span>
+                    </div>
+                  </>
                 ) : (
                   <div className="flex items-center justify-center h-full text-foreground/50">
                     No successful passes recorded
