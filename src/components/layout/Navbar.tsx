@@ -29,12 +29,12 @@ const Navbar = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/" className="flex items-center">
-            <img 
+           <img 
               src="/logo.png" 
-              alt="EdgePilot" 
-              className="h-8 w-auto mr-2"
-            />
-            <span className="text-xl font-semibold font-poppins">EdgePilot</span>
+                alt="EdgePilot icon"
+                className="h-8 w-8 mr-2"
+    />
+        <span className="text-xl font-semibold font-poppins text-white">EdgePilot</span>
           </Link>
         </div>
         
