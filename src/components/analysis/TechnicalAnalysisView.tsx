@@ -1,5 +1,5 @@
 import { TechnicalAnalysis } from '../../types';
-import { Gauge, TrendingUp, TrendingDown, Pause, BarChart2 } from 'lucide-react';
+import { Gauge, TrendingUp, TrendingDown, Pause, BarChart2, CheckCircle, XCircle, Minus } from 'lucide-react';
 
 type TechnicalAnalysisViewProps = {
   data: TechnicalAnalysis;
@@ -27,6 +27,75 @@ const TechnicalAnalysisView = ({ data }: TechnicalAnalysisViewProps) => {
       : data.trend === 'downtrend'
       ? 'text-error'
       : 'text-foreground/70'
+  };
+
+  const renderConfluenceScore = () => {
+    const { confluence } = data;
+    const { signals, confluencePercentage, overallSignal } = confluence;
+
+    return (
+      <div className="border border-border rounded-lg p-4 mt-6">
+        <h3 className="text-md font-medium mb-3">Indicator Confluence</h3>
+        
+        <div className="space-y-3">
+          {signals.map((signal, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center">
+                {signal.signal === 'bullish' ? (
+                  <CheckCircle size={16} className="text-success mr-2" />
+                ) : signal.signal === 'bearish' ? (
+                  <XCircle size={16} className="text-error mr-2" />
+                ) : (
+                  <Minus size={16} className="text-foreground/70 mr-2" />
+                )}
+                <span className="text-sm">{signal.name}</span>
+              </div>
+              <div className="flex items-center">
+                <span className={`text-sm ${
+                  signal.signal === 'bullish' ? 'text-success' :
+                  signal.signal === 'bearish' ? 'text-error' :
+                  'text-foreground/70'
+                }`}>
+                  {signal.signal.toUpperCase()}
+                </span>
+                <div className="ml-3 w-16 bg-secondary/20 h-1.5 rounded-full">
+                  <div 
+                    className={`h-1.5 rounded-full ${
+                      signal.signal === 'bullish' ? 'bg-success' :
+                      signal.signal === 'bearish' ? 'bg-error' :
+                      'bg-foreground/30'
+                    }`}
+                    style={{ width: `${signal.strength}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">Overall Confluence</span>
+            <div className="flex items-center">
+              <span className={`text-sm font-medium ${
+                overallSignal === 'bullish' ? 'text-success' :
+                overallSignal === 'bearish' ? 'text-error' :
+                'text-foreground/70'
+              }`}>
+                {confluencePercentage}% Aligned
+              </span>
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                overallSignal === 'bullish' ? 'bg-success/20 text-success' :
+                overallSignal === 'bearish' ? 'bg-error/20 text-error' :
+                'bg-secondary/20'
+              }`}>
+                {overallSignal.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
   
   return (
@@ -186,6 +255,7 @@ const TechnicalAnalysisView = ({ data }: TechnicalAnalysisViewProps) => {
           </div>
         </div>
       </div>
+      {renderConfluenceScore()}
     </div>
   );
 };
