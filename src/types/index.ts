@@ -72,14 +72,43 @@ export type TechnicalAnalysis = {
   keyLevels: {price: number, type: 'support' | 'resistance', strength: number}[];
 };
 
-export type WalkForwardResult = {
-  windowStart: string;
-  windowEnd: string;
-  returnPct: number;
-  drawdownPct: number;
-  winRate: number;
+export type WalkForwardWindow = {
+  trainStart: string;
+  trainEnd: string;
+  testStart: string;
+  testEnd: string;
+  trainReturn: number;
+  testReturn: number;
+  trainWinRate: number;
+  testWinRate: number;
+  maxDrawdown: number;
   trades: number;
   passed: boolean;
+};
+
+export type WalkForwardSplitRatio = '1/1' | '2/1' | '3/1' | 'custom';
+
+export type WalkForwardAnalysis = {
+  enabled: boolean;
+  splitRatio: WalkForwardSplitRatio;
+  customSplit?: {
+    trainDays: number;
+    testDays: number;
+  };
+  windows: WalkForwardWindow[];
+  summary: {
+    avgTestReturn: number;
+    avgTrainReturn: number;
+    consistencyScore: number;
+    robustnessScore: number;
+    bestWindow: WalkForwardWindow;
+    worstWindow: WalkForwardWindow;
+    passRate: number;
+    winRateRange: {
+      min: number;
+      max: number;
+    };
+  };
 };
 
 export type QuantAnalysis = {
@@ -103,26 +132,7 @@ export type QuantAnalysis = {
     profitTargetAchievable: boolean;
     riskPerTradeCompliant: boolean;
   };
-  walkForward?: {
-    enabled: boolean;
-    results: WalkForwardResult[];
-    summary: {
-      avgReturn: number;
-      maxDrawdown: number;
-      consistencyScore: number;
-      bestWindow: {
-        start: string;
-        end: string;
-        return: number;
-      };
-      worstWindow: {
-        start: string;
-        end: string;
-        return: number;
-      };
-      passRate: number;
-    };
-  };
+  walkForward?: WalkForwardAnalysis;
 };
 
 export type SentimentAnalysis = {
