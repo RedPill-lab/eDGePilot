@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAnalysis } from '../../context/AnalysisContext';
 import { ChevronDown, Settings, LineChart, TrendingUp, Repeat, Target } from 'lucide-react';
 
@@ -39,30 +39,25 @@ const presets: Record<IndicatorPreset, IndicatorConfig> = {
   }
 };
 
-const indicators: Record<Indicator, { name: string; description: string }> = {
-  ema: {
-    name: 'EMA',
-    description: 'Exponential Moving Average (50, 200)'
-  },
-  rsi: {
-    name: 'RSI',
-    description: 'Relative Strength Index (14)'
-  },
-  roc: {
-    name: 'ROC',
-    description: 'Rate of Change'
-  },
-  sr: {
-    name: 'Support & Resistance',
-    description: 'Key price levels'
-  },
-  sd: {
-    name: 'Supply & Demand',
-    description: 'Supply and demand zones'
-  },
-  bb: {
-    name: 'Bollinger Bands',
-    description: '20-period, 2 standard deviations'
+const getIndicatorDescription = (indicator: Indicator, strategy: 'intraday' | 'swing' | 'position') => {
+  switch (indicator) {
+    case 'ema':
+      return strategy === 'intraday' ? 'EMA (20, 50)' :
+             strategy === 'swing' ? 'EMA (50, 100)' :
+             'EMA (100, 200)';
+    case 'rsi':
+      return `RSI (${strategy === 'intraday' ? '7' : 
+                     strategy === 'swing' ? '14' : '21'})`;
+    case 'roc':
+      return `Rate of Change (${strategy === 'intraday' ? '5' : 
+                               strategy === 'swing' ? '10' : '21'})`;
+    case 'bb':
+      return `Bollinger Bands (${strategy === 'intraday' ? '20-period, 1.5σ' : 
+                                strategy === 'swing' ? '30-period, 2.0σ' : '50-period, 2.5σ'})`;
+    case 'sr':
+      return 'Support & Resistance levels';
+    case 'sd':
+      return 'Supply & Demand zones';
   }
 };
 
@@ -71,7 +66,43 @@ const IndicatorStrategySelector = () => {
   const [selectedPreset, setSelectedPreset] = useState<IndicatorPreset>('balanced');
   const [customIndicators, setCustomIndicators] = useState<Indicator[]>([]);
   
-  const { setIndicatorStrategy } = useAnalysis();
+  const { analysisState, setIndicatorStrategy } = useAnalysis();
+  const strategy = analysisState.strategy || 'swing';
+  
+  const indicators: Record<Indicator, { name: string; description: string }> = {
+    ema: {
+      name: 'EMA',
+      description: getIndicatorDescription('ema', strategy)
+    },
+    rsi: {
+      name: 'RSI',
+      description: getIndicatorDescription('rsi', strategy)
+    },
+    roc: {
+      name: 'ROC',
+      description: getIndicatorDescription('roc', strategy)
+    },
+    sr: {
+      name: 'Support & Resistance',
+      description: getIndicatorDescription('sr', strategy)
+    },
+    sd: {
+      name: 'Supply & Demand',
+      description: getIndicatorDescription('sd', strategy)
+    },
+    bb: {
+      name: 'Bollinger Bands',
+      description: getIndicatorDescription('bb', strategy)
+    }
+  };
+  
+  useEffect(() => {
+    // Update indicator descriptions when strategy changes
+    Object.keys(indicators).forEach(key => {
+      indicators[key as Indicator].description = 
+        getIndicatorDescription(key as Indicator, strategy);
+    });
+  }, [strategy]);
   
   const handlePresetChange = (preset: IndicatorPreset) => {
     setSelectedPreset(preset);
