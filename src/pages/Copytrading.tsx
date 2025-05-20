@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Pencil, Trash2, CheckCircle } from 'lucide-react';
 import { FollowerAccount } from '../types';
 import FollowerSettingsModal from '../components/copytrading/FollowerSettingsModal';
+import AddFollowerModal from '../components/copytrading/AddFollowerModal';
 
 // Mock data for initial development
 const mockFollowers: FollowerAccount[] = [
@@ -30,6 +31,7 @@ const mockFollowers: FollowerAccount[] = [
 const Copytrading = () => {
   const [followers, setFollowers] = useState<FollowerAccount[]>(mockFollowers);
   const [editingFollower, setEditingFollower] = useState<FollowerAccount | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleEditFollower = (follower: FollowerAccount) => {
     setEditingFollower(follower);
@@ -46,11 +48,19 @@ const Copytrading = () => {
     setFollowers(followers.filter(f => f.id !== id));
   };
 
+  const handleAddFollower = (newFollower: FollowerAccount) => {
+    setFollowers([...followers, newFollower]);
+    setIsAddModalOpen(false);
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Copytrading</h1>
-        <button className="btn btn-primary">
+        <button 
+          className="btn btn-primary"
+          onClick={() => setIsAddModalOpen(true)}
+        >
           <Plus size={18} className="mr-2" />
           Add Follower
         </button>
@@ -187,6 +197,13 @@ const Copytrading = () => {
           follower={editingFollower}
           onClose={() => setEditingFollower(null)}
           onSave={handleSaveFollowerSettings}
+        />
+      )}
+
+      {isAddModalOpen && (
+        <AddFollowerModal
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={handleAddFollower}
         />
       )}
     </div>
