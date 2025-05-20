@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export type User = {
   id: string;
   email: string;
@@ -145,6 +147,20 @@ export type FollowerAccount = {
   lastSync?: string;
   trades?: number;
   winRate?: number;
+  symbolSuffix?: string;
+  executionModel?: 'ECN' | 'MM';
+  riskMode?: 'fixed' | 'percentage' | 'match';
+  maxRiskPerTrade?: number;
+  maxDailyDrawdown?: number;
+  slBuffer?: number;
+  tpBuffer?: number;
+  entryBuffer?: number;
+  delayOffset?: number;
+  autoDisableRules?: {
+    propRulesViolated: boolean;
+    masterDrawdownBreached: boolean;
+    excludedInstruments: string[];
+  };
 };
 
 export type AdjustedSignal = {
