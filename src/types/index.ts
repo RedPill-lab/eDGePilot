@@ -72,6 +72,16 @@ export type TechnicalAnalysis = {
   keyLevels: {price: number, type: 'support' | 'resistance', strength: number}[];
 };
 
+export type WalkForwardResult = {
+  windowStart: string;
+  windowEnd: string;
+  returnPct: number;
+  drawdownPct: number;
+  winRate: number;
+  trades: number;
+  passed: boolean;
+};
+
 export type QuantAnalysis = {
   winRate: number;
   expectedReturn: number;
@@ -92,6 +102,26 @@ export type QuantAnalysis = {
     overallDrawdownCompliant: boolean;
     profitTargetAchievable: boolean;
     riskPerTradeCompliant: boolean;
+  };
+  walkForward?: {
+    enabled: boolean;
+    results: WalkForwardResult[];
+    summary: {
+      avgReturn: number;
+      maxDrawdown: number;
+      consistencyScore: number;
+      bestWindow: {
+        start: string;
+        end: string;
+        return: number;
+      };
+      worstWindow: {
+        start: string;
+        end: string;
+        return: number;
+      };
+      passRate: number;
+    };
   };
 };
 

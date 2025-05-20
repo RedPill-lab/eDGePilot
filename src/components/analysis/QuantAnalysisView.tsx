@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { QuantAnalysis } from '../../types';
-import { TrendingUp, BarChart2, Activity, AlertTriangle, Scale } from 'lucide-react';
+import { TrendingUp, BarChart2, Activity, AlertTriangle, Scale, ToggleLeft, ToggleRight } from 'lucide-react';
 import BacktestDateRangeSelector from './BacktestDateRangeSelector';
 import EquityCurveChart from './EquityCurveChart';
 
@@ -9,28 +9,28 @@ type QuantAnalysisViewProps = {
 };
 
 const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
+  const [walkForwardEnabled, setWalkForwardEnabled] = useState(false);
   const [backtestResults, setBacktestResults] = useState({
     winRate: data.winRate,
     maxDrawdown: data.maxDrawdown,
     riskRewardRatio: data.riskRewardRatio,
     equityCurves: Array.from({ length: 10 }, () => 
       Array.from({ length: 30 }, (_, i) => {
-        const base = (Math.random() * 4) - 2; // Random base between -2 and 2
-        return base + (i * 0.2); // Slight upward trend
+        const base = (Math.random() * 4) - 2;
+        return base + (i * 0.2);
       })
     ),
     medianCurveIndex: 4
   });
 
   const handleDateRangeChange = (range: { start: Date; end: Date }) => {
-    // In a real app, this would trigger a new backtest calculation
-    // For now, we'll just simulate new results
+    // Simulate new backtest results
     const days = Math.floor((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24));
     
     setBacktestResults({
-      winRate: 0.5 + (Math.random() * 0.3), // 50-80%
-      maxDrawdown: 5 + (Math.random() * 10), // 5-15%
-      riskRewardRatio: 1.5 + (Math.random() * 1), // 1.5-2.5
+      winRate: 0.5 + (Math.random() * 0.3),
+      maxDrawdown: 5 + (Math.random() * 10),
+      riskRewardRatio: 1.5 + (Math.random() * 1),
       equityCurves: Array.from({ length: 10 }, () => 
         Array.from({ length: days }, (_, i) => {
           const base = (Math.random() * 4) - 2;
@@ -56,7 +56,25 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
   return (
     <div className="flex flex-col space-y-6 fade-in">
       <div className="card p-6">
-        <h2 className="text-xl font-semibold mb-4">Quantitative Analysis</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Quantitative Analysis</h2>
+          <button
+            onClick={() => setWalkForwardEnabled(!walkForwardEnabled)}
+            className="flex items-center text-sm hover:text-primary"
+          >
+            {walkForwardEnabled ? (
+              <>
+                <ToggleRight size={20} className="mr-2" />
+                Walk-Forward Analysis Enabled
+              </>
+            ) : (
+              <>
+                <ToggleLeft size={20} className="mr-2" />
+                Enable Walk-Forward Analysis
+              </>
+            )}
+          </button>
+        </div>
         
         <BacktestDateRangeSelector onRangeChange={handleDateRangeChange} />
         
@@ -124,6 +142,67 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
           </div>
         </div>
 
+        {walkForwardEnabled && data.walkForward && (
+          <div className="border border-border rounded-lg p-5 mb-6">
+            <h3 className="text-md font-medium mb-4">Walk-Forward Analysis</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+              <div className="bg-card-foreground/5 p-4 rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Best Performance</h4>
+                <p className="text-2xl font-bold text-success">
+                  {formatPercent(data.walkForward.summary.bestWindow.return)}
+                </p>
+                <p className="text-xs text-foreground/70 mt-1">
+                  {new Date(data.walkForward.summary.bestWindow.start).toLocaleDateString()} - {new Date(data.walkForward.summary.bestWindow.end).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div className="bg-card-foreground/5 p-4 rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Strategy Consistency</h4>
+                <p className="text-2xl font-bold">
+                  {data.walkForward.summary.consistencyScore.toFixed(1)}/10
+                </p>
+                <p className="text-xs text-foreground/70 mt-1">
+                  Based on performance across all windows
+                </p>
+              </div>
+              
+              <div className="bg-card-foreground/5 p-4 rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Window Pass Rate</h4>
+                <p className="text-2xl font-bold">
+                  {(data.walkForward.summary.passRate * 100).toFixed(0)}%
+                </p>
+                <p className="text-xs text-foreground/70 mt-1">
+                  Strategy held up in {Math.round(data.walkForward.results.length * data.walkForward.summary.passRate)}/{data.walkForward.results.length} windows
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-card-foreground/5 p-4 rounded-lg">
+              <h4 className="text-sm font-medium mb-3">Window Performance</h4>
+              <div className="space-y-3">
+                {data.walkForward.results.map((result, index) => (
+                  <div key={index} className="flex items-center">
+                    <div className="w-32 text-sm">
+                      {new Date(result.windowStart).toLocaleDateString()}
+                    </div>
+                    <div className="flex-1">
+                      <div className="h-2 bg-secondary/20 rounded-full">
+                        <div 
+                          className={`h-2 rounded-full ${result.passed ? 'bg-success' : 'bg-error'}`}
+                          style={{ width: `${Math.min(Math.abs(result.returnPct), 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className={`w-24 text-right text-sm ${result.returnPct >= 0 ? 'text-success' : 'text-error'}`}>
+                      {formatPercent(result.returnPct)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="border border-border rounded-lg p-5">
           <h3 className="text-md font-medium mb-4">Monte Carlo Simulation</h3>
           <EquityCurveChart 
@@ -139,6 +218,11 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
                   backtestResults.winRate > 0.5 ? 'moderate' : 'weak'
                 } edge with {(backtestResults.winRate * 100).toFixed(1)}% win rate and {
                   backtestResults.maxDrawdown.toFixed(1)}% maximum drawdown.
+                {walkForwardEnabled && data.walkForward && (
+                  data.walkForward.summary.passRate < 0.7
+                    ? " ❌ Avoid this strategy — Walk-Forward Analysis shows inconsistent performance across test windows."
+                    : " ✅ Strategy shows robust performance across different market conditions."
+                )}
               </p>
             </div>
           </div>
