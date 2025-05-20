@@ -1,9 +1,19 @@
-// ... (existing imports)
+import React from 'react';
+
+interface TradeSignalViewProps {
+  data: {
+    technicalAnalysis: {
+      confluence: {
+        overallSignal: string;
+        confluencePercentage: number;
+        alignedSignals: number;
+        totalSignals: number;
+      };
+    };
+  };
+}
 
 const TradeSignalView = ({ data }: TradeSignalViewProps) => {
-  // ... (existing code)
-  
-  // Add this section to your render method where appropriate
   const renderConfluenceIndicators = () => {
     const { confluence } = data.technicalAnalysis;
     
@@ -35,10 +45,10 @@ const TradeSignalView = ({ data }: TradeSignalViewProps) => {
     );
   };
   
-  // Add renderConfluenceIndicators() to your JSX where appropriate
-  
   return (
-    // ... (existing JSX)
+    <div className="p-4">
+      {renderConfluenceIndicators()}
+    </div>
   );
 };
 
