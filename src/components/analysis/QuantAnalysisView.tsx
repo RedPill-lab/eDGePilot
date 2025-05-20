@@ -1,4 +1,3 @@
-```typescript
 import { useState } from 'react';
 import { QuantAnalysis } from '../../types';
 import { TrendingUp, BarChart2, Activity, AlertTriangle, Scale } from 'lucide-react';
@@ -49,11 +48,9 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
   
   // Get color class based on value
   const getColorClass = (value: number, inverse = false) => {
-    if (!inverse) {
-      return value > 0 ? 'text-success' : value < 0 ? 'text-error' : 'text-foreground';
-    } else {
-      return value < 0 ? 'text-success' : value > 0 ? 'text-error' : 'text-foreground';
-    }
+    return !inverse 
+      ? value > 0 ? 'text-success' : value < 0 ? 'text-error' : 'text-foreground'
+      : value < 0 ? 'text-success' : value > 0 ? 'text-error' : 'text-foreground';
   };
 
   return (
@@ -152,4 +149,3 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
 };
 
 export default QuantAnalysisView;
-```
