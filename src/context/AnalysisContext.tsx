@@ -5,7 +5,8 @@ import {
   AnalysisStage, 
   AnalysisState,
   PropFirmSettings,
-  BrokerSettings
+  BrokerSettings,
+  BrokerProfile
 } from '../types';
 import { runAnalysisPipeline } from '../services/analysisService';
 
@@ -15,6 +16,7 @@ type AnalysisContextType = {
   setStrategy: (strategy: StrategyType) => void;
   setPropFirmSettings: (settings: PropFirmSettings | null) => void;
   setBrokerSettings: (settings: BrokerSettings | null) => void;
+  setSelectedBrokerProfile: (profile: BrokerProfile | null) => void;
   startAnalysis: () => Promise<void>;
   resetAnalysis: () => void;
   goToNextStage: () => void;
@@ -27,6 +29,7 @@ const initialState: AnalysisState = {
   strategy: null,
   propFirmSettings: null,
   brokerSettings: null,
+  selectedBrokerProfile: null,
   stages: [],
   currentStage: 0,
   isLoading: false,
@@ -54,6 +57,10 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
     setAnalysisState((prev) => ({ ...prev, brokerSettings: settings }));
   };
 
+  const setSelectedBrokerProfile = (profile: BrokerProfile | null) => {
+    setAnalysisState((prev) => ({ ...prev, selectedBrokerProfile: profile }));
+  };
+
   const startAnalysis = async () => {
     if (!analysisState.instrument || !analysisState.strategy) {
       setAnalysisState((prev) => ({
@@ -76,7 +83,8 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
         analysisState.instrument,
         analysisState.strategy,
         analysisState.propFirmSettings,
-        analysisState.brokerSettings
+        analysisState.brokerSettings,
+        analysisState.selectedBrokerProfile
       );
       
       setAnalysisState((prev) => ({
@@ -132,6 +140,7 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
         setStrategy,
         setPropFirmSettings,
         setBrokerSettings,
+        setSelectedBrokerProfile,
         startAnalysis,
         resetAnalysis,
         goToNextStage,

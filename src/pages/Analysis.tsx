@@ -4,6 +4,7 @@ import { useAnalysis } from '../context/AnalysisContext';
 import InstrumentSelector from '../components/analysis/InstrumentSelector';
 import StrategySelector from '../components/analysis/StrategySelector';
 import PropFirmSettings from '../components/analysis/PropFirmSettings';
+import BrokerProfileSelector from '../components/analysis/BrokerProfileSelector';
 import AnalysisStages from '../components/analysis/AnalysisStages';
 import AnalysisContent from '../components/analysis/AnalysisContent';
 import { PlayCircle, AlertTriangle } from 'lucide-react';
@@ -40,6 +41,7 @@ const Analysis = () => {
         <StrategySelector />
       </div>
 
+      <BrokerProfileSelector />
       <PropFirmSettings />
       
       {showLimitWarning && (

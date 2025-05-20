@@ -18,6 +18,17 @@ export type User = {
   };
 };
 
+export type BrokerProfile = {
+  id: string;
+  name: string;
+  spreads: {
+    [key: string]: number; // instrument symbol -> typical spread
+  };
+  executionModel: 'ECN' | 'MM';
+  description?: string;
+  isDefault?: boolean;
+};
+
 export type Instrument = {
   symbol: string;
   name: string;
@@ -109,7 +120,7 @@ export type TradeSignal = {
     entry: number;
     stopLoss: number;
     takeProfit: number;
-    spread: number;
+    spreadBuffer: number;
   };
   confidenceLevel: number;
   rationale: string;
@@ -132,6 +143,7 @@ export type AnalysisState = {
   strategy: StrategyType | null;
   propFirmSettings: PropFirmSettings | null;
   brokerSettings: BrokerSettings | null;
+  selectedBrokerProfile: BrokerProfile | null;
   stages: AnalysisStage[];
   currentStage: number;
   isLoading: boolean;
