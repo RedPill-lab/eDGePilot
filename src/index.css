@@ -86,6 +86,55 @@ body {
   .badge-error {
     @apply bg-error/20 text-error;
   }
+
+  /* Pricing tier styles */
+  .pricing-tier {
+    @apply bg-card border border-border rounded-xl p-8 relative;
+  }
+
+  .pricing-tier.popular {
+    @apply bg-primary/10 border-2 border-primary;
+  }
+
+  .pricing-tier.early-access {
+    @apply bg-accent/10 border-2 border-accent;
+  }
+
+  .pricing-tier h3 {
+    @apply text-2xl font-bold mb-2 flex items-center justify-between;
+  }
+
+  .pricing-tier .price {
+    @apply text-xl text-foreground/80;
+  }
+
+  .pricing-tier ul {
+    @apply space-y-3 mb-8;
+  }
+
+  .pricing-tier ul li {
+    @apply flex items-start;
+  }
+
+  .pricing-tier .cta-button {
+    @apply btn w-full text-center;
+  }
+
+  .pricing-tier.popular .cta-button {
+    @apply btn-primary;
+  }
+
+  .pricing-tier .popular-badge {
+    @apply absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-sm;
+  }
+
+  .pricing-tier .early-badge {
+    @apply absolute -top-3 left-1/2 transform -translate-x-1/2 bg-accent text-white px-3 py-1 rounded-full text-sm;
+  }
+
+  .pricing-tier p.disclaimer {
+    @apply text-center text-sm text-foreground/70 mt-6;
+  }
 }
 
 .fade-in {
