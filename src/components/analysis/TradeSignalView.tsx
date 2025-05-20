@@ -2,8 +2,8 @@ import React from 'react';
 
 interface TradeSignalViewProps {
   data: {
-    technicalAnalysis: {
-      confluence: {
+    technicalAnalysis?: {
+      confluence?: {
         overallSignal: string;
         confluencePercentage: number;
         alignedSignals: number;
@@ -15,7 +15,18 @@ interface TradeSignalViewProps {
 
 const TradeSignalView = ({ data }: TradeSignalViewProps) => {
   const renderConfluenceIndicators = () => {
-    const { confluence } = data.technicalAnalysis;
+    const confluence = data.technicalAnalysis?.confluence;
+    
+    if (!confluence) {
+      return (
+        <div className="mt-4 p-4 bg-card-foreground/5 rounded-md">
+          <h3 className="text-sm font-medium mb-2">Technical Confluence</h3>
+          <div className="text-sm text-muted-foreground">
+            No confluence data available
+          </div>
+        </div>
+      );
+    }
     
     return (
       <div className="mt-4 p-4 bg-card-foreground/5 rounded-md">
