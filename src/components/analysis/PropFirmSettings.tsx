@@ -9,6 +9,7 @@ const PropFirmSettings = () => {
   const [maxDailyDrawdown, setMaxDailyDrawdown] = useState(2);
   const [overallDrawdown, setOverallDrawdown] = useState(5);
   const [profitTarget, setProfitTarget] = useState(8);
+  const [remainingDays, setRemainingDays] = useState(30);
   const [broker, setBroker] = useState('Custom');
   const [customSpread, setCustomSpread] = useState(1);
   const [activeTab, setActiveTab] = useState<'settings' | 'simulator'>('settings');
@@ -30,6 +31,7 @@ const PropFirmSettings = () => {
         maxDailyDrawdown,
         overallDrawdown,
         profitTarget,
+        remainingDays
       });
     } else {
       setPropFirmSettings(null);
@@ -65,8 +67,26 @@ const PropFirmSettings = () => {
       maxDailyDrawdown,
       overallDrawdown,
       profitTarget,
+      remainingDays
     });
   };
+
+  const getTimeWarning = () => {
+    if (remainingDays <= 5) {
+      return {
+        type: 'error',
+        message: 'Critical time remaining. Only high-probability intraday setups will be considered.'
+      };
+    } else if (remainingDays <= 10) {
+      return {
+        type: 'warning',
+        message: 'Limited time remaining. Prioritizing shorter-term trading opportunities.'
+      };
+    }
+    return null;
+  };
+
+  const timeWarning = getTimeWarning();
 
   return (
     <div className="mb-6">
@@ -186,21 +206,34 @@ const PropFirmSettings = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Average Spread (pips)
+                    Remaining Challenge Days
                   </label>
                   <input
                     type="number"
-                    value={customSpread}
-                    onChange={(e) => handleSpreadChange(Number(e.target.value))}
+                    value={remainingDays}
+                    onChange={(e) => {
+                      setRemainingDays(Number(e.target.value));
+                      handleSettingsChange();
+                    }}
                     className="input"
-                    min="0"
-                    step="0.1"
-                    disabled={broker !== 'Custom'}
+                    min="1"
+                    max="60"
                   />
                 </div>
               </div>
 
-              <div className="flex items-start p-3 bg-warning/10 text-warning rounded-md">
+              {timeWarning && (
+                <div className={`flex items-start p-3 rounded-md ${
+                  timeWarning.type === 'error' 
+                    ? 'bg-error/10 text-error' 
+                    : 'bg-warning/10 text-warning'
+                }`}>
+                  <AlertTriangle size={18} className="mr-2 mt-0.5" />
+                  <p className="text-sm">{timeWarning.message}</p>
+                </div>
+              )}
+
+              <div className="flex items-start p-3 bg-warning/10 text-warning rounded-md mt-4">
                 <AlertTriangle size={18} className="mr-2 mt-0.5" />
                 <p className="text-sm">
                   Signals will be filtered based on prop firm rules. Only trades with R:R {'>'} 1.5 
