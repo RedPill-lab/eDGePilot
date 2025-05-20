@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 // Update the handleEditFollower function in the Copytrading component
 const [editingFollower, setEditingFollower] = useState<FollowerAccount | null>(null);
 
