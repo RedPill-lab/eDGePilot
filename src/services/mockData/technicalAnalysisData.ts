@@ -272,6 +272,13 @@ const calculateROC = (price: number, period: number): number => {
   return baseROC * (1 + adjustment);
 };
 
+const calculateEMA = (price: number, period: number): number => {
+  // For mock data, we'll simulate EMA by adding some random variation
+  const multiplier = 2 / (period + 1);
+  const randomFactor = 1 + (Math.random() - 0.5) * 0.01; // ±0.5% random variation
+  return price * randomFactor;
+};
+
 const determineTrend = (price: number, rocPeriod: number): 'uptrend' | 'downtrend' | 'sideways' => {
   const roc = calculateROC(price, rocPeriod);
   if (roc > 0.5) return 'uptrend';
