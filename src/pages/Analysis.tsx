@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAnalysis } from '../context/AnalysisContext';
 import InstrumentSelector from '../components/analysis/InstrumentSelector';
 import StrategySelector from '../components/analysis/StrategySelector';
+import IndicatorStrategySelector from '../components/analysis/IndicatorStrategySelector';
 import PropFirmSettings from '../components/analysis/PropFirmSettings';
 import BrokerProfileSelector from '../components/analysis/BrokerProfileSelector';
 import AnalysisStages from '../components/analysis/AnalysisStages';
@@ -41,6 +42,7 @@ const Analysis = () => {
         <StrategySelector />
       </div>
 
+      <IndicatorStrategySelector />
       <BrokerProfileSelector />
       <PropFirmSettings />
       

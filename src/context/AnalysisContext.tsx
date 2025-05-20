@@ -6,7 +6,8 @@ import {
   AnalysisState,
   PropFirmSettings,
   BrokerSettings,
-  BrokerProfile
+  BrokerProfile,
+  IndicatorStrategy
 } from '../types';
 import { runAnalysisPipeline } from '../services/analysisService';
 
@@ -17,6 +18,7 @@ type AnalysisContextType = {
   setPropFirmSettings: (settings: PropFirmSettings | null) => void;
   setBrokerSettings: (settings: BrokerSettings | null) => void;
   setSelectedBrokerProfile: (profile: BrokerProfile | null) => void;
+  setIndicatorStrategy: (strategy: IndicatorStrategy | null) => void;
   startAnalysis: () => Promise<void>;
   resetAnalysis: () => void;
   goToNextStage: () => void;
@@ -30,6 +32,10 @@ const initialState: AnalysisState = {
   propFirmSettings: null,
   brokerSettings: null,
   selectedBrokerProfile: null,
+  indicatorStrategy: {
+    preset: 'balanced',
+    indicators: ['ema', 'rsi', 'sr']
+  },
   stages: [],
   currentStage: 0,
   isLoading: false,
@@ -61,6 +67,10 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
     setAnalysisState((prev) => ({ ...prev, selectedBrokerProfile: profile }));
   };
 
+  const setIndicatorStrategy = (strategy: IndicatorStrategy | null) => {
+    setAnalysisState((prev) => ({ ...prev, indicatorStrategy: strategy }));
+  };
+
   const startAnalysis = async () => {
     if (!analysisState.instrument || !analysisState.strategy) {
       setAnalysisState((prev) => ({
@@ -84,7 +94,8 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
         analysisState.strategy,
         analysisState.propFirmSettings,
         analysisState.brokerSettings,
-        analysisState.selectedBrokerProfile
+        analysisState.selectedBrokerProfile,
+        analysisState.indicatorStrategy
       );
       
       setAnalysisState((prev) => ({
@@ -141,6 +152,7 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
         setPropFirmSettings,
         setBrokerSettings,
         setSelectedBrokerProfile,
+        setIndicatorStrategy,
         startAnalysis,
         resetAnalysis,
         goToNextStage,
