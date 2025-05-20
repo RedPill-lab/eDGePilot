@@ -84,8 +84,6 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       isLoading: true,
       error: null,
-      stages: [],
-      currentStage: 0,
     }));
 
     try {
@@ -102,18 +100,26 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
         ...prev,
         stages: result,
         isLoading: false,
+        currentStage: 0,
       }));
     } catch (error) {
       setAnalysisState((prev) => ({
         ...prev,
         isLoading: false,
         error: 'Analysis failed. Please try again.',
+        stages: [],
+        currentStage: 0,
       }));
     }
   };
 
   const resetAnalysis = () => {
-    setAnalysisState(initialState);
+    setAnalysisState((prev) => ({
+      ...prev,
+      stages: [],
+      currentStage: 0,
+      error: null,
+    }));
   };
 
   const goToNextStage = () => {
