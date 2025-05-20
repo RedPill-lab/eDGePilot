@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Analysis from './pages/Analysis';
+import Copytrading from './pages/Copytrading';
 import Settings from './pages/Settings';
 import Layout from './components/layout/Layout';
 
@@ -32,6 +33,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Analysis />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/copytrading" 
+                element={
+                  <ProtectedRoute>
+                    <Copytrading />
                   </ProtectedRoute>
                 } 
               />

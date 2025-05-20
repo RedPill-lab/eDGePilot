@@ -135,3 +135,25 @@ export type AnalysisState = {
   isLoading: boolean;
   error: string | null;
 };
+
+export type FollowerAccount = {
+  id: string;
+  name: string;
+  broker: string;
+  spreadBuffer: number;
+  active: boolean;
+  lastSync?: string;
+  trades?: number;
+  winRate?: number;
+};
+
+export type AdjustedSignal = {
+  originalSignal: TradeSignal;
+  adjustedLevels: {
+    entry: number;
+    stopLoss: number;
+    takeProfit: number;
+    spreadBuffer: number;
+  };
+  follower: FollowerAccount;
+};

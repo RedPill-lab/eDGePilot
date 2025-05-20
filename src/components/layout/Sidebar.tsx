@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Settings, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings, Users, ChevronRight } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -18,6 +18,11 @@ const Sidebar = () => {
       name: 'Analysis',
       path: '/analysis',
       icon: <BarChart3 size={20} />,
+    },
+    {
+      name: 'Copytrading',
+      path: '/copytrading',
+      icon: <Users size={20} />,
     },
     {
       name: 'Settings',
