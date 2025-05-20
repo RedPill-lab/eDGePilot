@@ -45,6 +45,86 @@ export const mockTechnicalAnalysis = (
   return analysis;
 };
 
+const calculateIndicatorSignals = (
+  price: number,
+  settings: typeof indicatorDefaults.intraday,
+  activeIndicators: string[]
+): IndicatorSignal[] => {
+  const signals: IndicatorSignal[] = [];
+  
+  if (activeIndicators.includes('ema')) {
+    const ema50 = calculateEMA(price, 50);
+    const ema200 = calculateEMA(price, 200);
+    const signal: IndicatorSignal = {
+      name: 'EMA Cross',
+      signal: ema50 > ema200 ? 'bullish' : ema50 < ema200 ? 'bearish' : 'neutral',
+      strength: Math.abs((ema50 - ema200) / ema200 * 100),
+      description: `EMA 50 ${ema50 > ema200 ? 'above' : 'below'} EMA 200`
+    };
+    signals.push(signal);
+  }
+  
+  if (activeIndicators.includes('rsi')) {
+    const rsi = calculateRSI(price, settings.rsi);
+    const signal: IndicatorSignal = {
+      name: 'RSI',
+      signal: rsi > 70 ? 'bearish' : rsi < 30 ? 'bullish' : 'neutral',
+      strength: Math.abs(50 - rsi),
+      description: `RSI at ${rsi.toFixed(1)}`
+    };
+    signals.push(signal);
+  }
+  
+  if (activeIndicators.includes('roc')) {
+    const roc = calculateROC(price, settings.roc);
+    const signal: IndicatorSignal = {
+      name: 'Rate of Change',
+      signal: roc > 0.5 ? 'bullish' : roc < -0.5 ? 'bearish' : 'neutral',
+      strength: Math.abs(roc * 20),
+      description: `ROC ${roc > 0 ? '+' : ''}${roc.toFixed(2)}%`
+    };
+    signals.push(signal);
+  }
+  
+  if (activeIndicators.includes('bb')) {
+    const { period, dev } = settings.bb;
+    const signal: IndicatorSignal = {
+      name: 'Bollinger Bands',
+      signal: Math.random() > 0.5 ? 'bullish' : 'bearish',
+      strength: 60 + Math.random() * 40,
+      description: `Price near ${Math.random() > 0.5 ? 'upper' : 'lower'} band`
+    };
+    signals.push(signal);
+  }
+  
+  return signals;
+};
+
+const calculateConfluence = (signals: IndicatorSignal[]): ConfluenceScore => {
+  const bullishCount = signals.filter(s => s.signal === 'bullish').length;
+  const bearishCount = signals.filter(s => s.signal === 'bearish').length;
+  
+  let overallSignal: 'bullish' | 'bearish' | 'neutral';
+  if (bullishCount > bearishCount) {
+    overallSignal = 'bullish';
+  } else if (bearishCount > bullishCount) {
+    overallSignal = 'bearish';
+  } else {
+    overallSignal = 'neutral';
+  }
+  
+  const alignedSignals = Math.max(bullishCount, bearishCount);
+  const confluencePercentage = Math.round((alignedSignals / signals.length) * 100);
+  
+  return {
+    signals,
+    totalSignals: signals.length,
+    alignedSignals,
+    confluencePercentage,
+    overallSignal
+  };
+};
+
 const generateBaseAnalysis = (
   instrument: Instrument,
   strategy: StrategyType,
@@ -105,6 +185,10 @@ const generateBaseAnalysis = (
     // BB calculations would go here in a real implementation
   }
   
+  // Calculate indicator signals and confluence
+  const signals = calculateIndicatorSignals(basePrice, settings, activeIndicators);
+  const confluence = calculateConfluence(signals);
+  
   return {
     rsi: +rsi.toFixed(1),
     ema50: +ema50.toFixed(strategy === 'intraday' ? 2 : 0),
@@ -115,7 +199,8 @@ const generateBaseAnalysis = (
     demandZones,
     rateOfChange: +roc.toFixed(2),
     trend,
-    keyLevels: generateKeyLevels(basePrice, variation, settings.sr.strength)
+    keyLevels: generateKeyLevels(basePrice, variation, settings.sr.strength),
+    confluence
   };
 };
 
