@@ -20,3 +20,5 @@ const handleSaveFollowerSettings = (updatedFollower: FollowerAccount) => {
     onSave={handleSaveFollowerSettings}
   />
 )}
+
+export default handleSaveFollowerSettings
