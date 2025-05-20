@@ -5,7 +5,8 @@ import {
   TechnicalAnalysis, 
   QuantAnalysis, 
   SentimentAnalysis, 
-  TradeSignal 
+  TradeSignal,
+  PropFirmSettings 
 } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,8 +16,9 @@ export const generateTradeSignal = (
   macroAnalysis: MacroAnalysis,
   technicalAnalysis: TechnicalAnalysis,
   quantAnalysis: QuantAnalysis,
-  sentimentAnalysis: SentimentAnalysis
-): TradeSignal => {
+  sentimentAnalysis: SentimentAnalysis,
+  propFirmSettings?: PropFirmSettings | null
+): TradeSignal | null => {
   // Calculate overall action based on all analyses
   const action = determineAction(
     macroAnalysis.overallSentiment,
@@ -65,6 +67,12 @@ export const generateTradeSignal = (
   const pipsRisk = Math.abs(entryPrice - stopLoss) * pipMultiplier;
   const pipsReward = Math.abs(entryPrice - takeProfit) * pipMultiplier;
   const riskRewardRatio = pipsReward / pipsRisk;
+
+  // Check if trade meets R:R requirements for prop firm mode
+  const minRiskRewardRatio = 1.5;
+  if (propFirmSettings?.enabled && riskRewardRatio < minRiskRewardRatio) {
+    return null; // Signal filtered out due to insufficient R:R
+  }
   
   // Calculate confidence level
   const confidenceLevel = calculateConfidenceLevel(
@@ -108,7 +116,8 @@ export const generateTradeSignal = (
     timestamp: new Date().toISOString(),
     pipsRisk: +pipsRisk.toFixed(1),
     pipsReward: +pipsReward.toFixed(1),
-    riskRewardRatio: +riskRewardRatio.toFixed(2)
+    riskRewardRatio: +riskRewardRatio.toFixed(2),
+    propFirmCompliant: !propFirmSettings?.enabled || riskRewardRatio >= minRiskRewardRatio
   };
 };
 

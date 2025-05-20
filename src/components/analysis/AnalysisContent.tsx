@@ -4,11 +4,11 @@ import TechnicalAnalysisView from './TechnicalAnalysisView';
 import QuantAnalysisView from './QuantAnalysisView';
 import SentimentAnalysisView from './SentimentAnalysisView';
 import TradeSignalView from './TradeSignalView';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, AlertTriangle } from 'lucide-react';
 
 const AnalysisContent = () => {
   const { analysisState, goToNextStage, goToPreviousStage } = useAnalysis();
-  const { stages, currentStage, isLoading } = analysisState;
+  const { stages, currentStage, isLoading, propFirmSettings } = analysisState;
   
   // Render loading state
   if (isLoading) {
@@ -37,8 +37,24 @@ const AnalysisContent = () => {
     );
   }
   
-  // Render the current stage of analysis
+  // Check if signal was filtered out due to R:R
   const currentAnalysis = stages[currentStage];
+  if (currentAnalysis.type === 'signal' && !currentAnalysis.data && propFirmSettings?.enabled) {
+    return (
+      <div className="card p-8">
+        <div className="flex items-start text-warning">
+          <AlertTriangle size={24} className="mr-3 mt-1" />
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Trade Signal Filtered</h3>
+            <p className="text-foreground/90">
+              This trade was filtered out because the Risk-to-Reward ratio is below the minimum threshold of 1.5 
+              required for prop firm safety.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   // Render the appropriate view based on the current stage
   const renderStageContent = () => {
@@ -52,7 +68,7 @@ const AnalysisContent = () => {
       case 'sentiment':
         return <SentimentAnalysisView data={currentAnalysis.data} />;
       case 'signal':
-        return <TradeSignalView data={currentAnalysis.data} />;
+        return currentAnalysis.data ? <TradeSignalView data={currentAnalysis.data} /> : null;
       default:
         return <div>Unknown analysis type</div>;
     }
