@@ -4,6 +4,7 @@ import {
   ArrowRight, 
   BarChart2, 
   Brain, 
+  ChevronLeft,
   ChevronRight, 
   Globe2, 
   LineChart,
@@ -21,22 +22,67 @@ const Landing = () => {
   
   const testimonials = [
     {
-      quote: "Passed my FTMO 100K challenge using EdgePilot's risk filters.",
+      quote: "I trade NY session after work. I used to scan charts for hours — now I open EdgePilot, check the Macro + Technical combo, and I'm done in 10 minutes.",
       author: "K. Smith",
-      role: "Prop Trader",
+      role: "Retail Trader",
+      location: "New Jersey, USA",
       image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100"
     },
     {
-      quote: "I just load my broker's spread and go — haven't missed a day since.",
+      quote: "The signals are backed by logic. I can literally see the rationale, backtest stats, and sentiment before I enter. No more 'hope and pray'.",
       author: "D. Lopes",
-      role: "Forex Trader",
+      role: "Discretionary Swing Trader",
+      location: "São Paulo, Brazil",
       image: "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=100"
     },
     {
-      quote: "EdgePilot replaced 3 tools for me. It's my pre-market go-to.",
-      author: "M. Patel",
-      role: "System Trader",
+      quote: "I run a Monte Carlo simulation for my own models. EdgePilot builds that into the workflow. The Quant Agent changed how I validate trades.",
+      author: "T. Wang",
+      role: "Quant Trader",
+      location: "Singapore",
       image: "https://images.pexels.com/photos/3785104/pexels-photo-3785104.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "I've used over 10 signal groups. Most of them copy each other. EdgePilot filters out low-probability setups — and the spread adjustment is clutch.",
+      author: "E. Anderson",
+      role: "Copytrading Group Leader",
+      location: "Berlin, Germany",
+      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "I failed twice before. Once I saw how EdgePilot tailors each trade to your prop limits — it clicked. I hit 8% with room to spare.",
+      author: "J. Romero",
+      role: "FTMO Trader",
+      location: "Mexico City",
+      image: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "The macro and sentiment agents give me a bias. I still scalp manually, but now I start the day knowing which pairs are worth touching.",
+      author: "L. Banks",
+      role: "Scalper",
+      location: "Johannesburg, South Africa",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "It's like having an analyst, quant, and trade manager bundled into one clean UI. And no upsell every 5 seconds like other 'AI' tools.",
+      author: "A. Novak",
+      role: "Longtime Retail Trader",
+      location: "Warsaw, Poland",
+      image: "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "I run a small community. Since integrating EdgePilot for signal generation, our accuracy is up and my time spent analyzing is down 80%.",
+      author: "N. Ibrahim",
+      role: "Telegram Admin",
+      location: "Dubai, UAE",
+      image: "https://images.pexels.com/photos/1462980/pexels-photo-1462980.jpeg?auto=compress&cs=tinysrgb&w=100"
+    },
+    {
+      quote: "I'm not full-time yet, so the Free Plan is perfect. EURUSD only? That's all I need. And it still explains every signal in plain English.",
+      author: "S. Nguyen",
+      role: "Student Trader",
+      location: "Melbourne, AUS",
+      image: "https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=100"
     }
   ];
   
@@ -347,18 +393,28 @@ const Landing = () => {
           
           <div className="relative">
             <div className="overflow-hidden">
-              <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}>
+              <div 
+                className="flex transition-transform duration-500" 
+                style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+              >
                 {testimonials.map((testimonial, index) => (
                   <div key={index} className="w-full flex-shrink-0 px-4">
-                    <div className="bg-background border border-border rounded-xl p-8 text-center">
-                      <img 
-                        src={testimonial.image} 
-                        alt={testimonial.author}
-                        className="w-20 h-20 rounded-full mx-auto mb-6 object-cover"
-                      />
-                      <p className="text-xl mb-6">"{testimonial.quote}"</p>
-                      <p className="font-semibold">{testimonial.author}</p>
-                      <p className="text-sm text-foreground/70">{testimonial.role}</p>
+                    <div className="bg-background border border-border rounded-xl p-8">
+                      <div className="flex items-start space-x-4">
+                        <img 
+                          src={testimonial.image} 
+                          alt={testimonial.author}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-lg mb-4">{testimonial.quote}</p>
+                          <div>
+                            <p className="font-semibold">{testimonial.author}</p>
+                            <p className="text-sm text-foreground/70">{testimonial.role}</p>
+                            <p className="text-xs text-foreground/50">{testimonial.location}</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -370,11 +426,28 @@ const Landing = () => {
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
+                  className={`w-2 h-2 rounded-full transition-colors ${
                     index === activeTestimonial ? 'bg-primary' : 'bg-border'
                   }`}
                 />
               ))}
+            </div>
+            
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between pointer-events-none">
+              <button
+                onClick={() => setActiveTestimonial(Math.max(0, activeTestimonial - 1))}
+                className="pointer-events-auto p-2 rounded-full bg-background/80 border border-border hover:bg-background"
+                disabled={activeTestimonial === 0}
+              >
+                <ChevronLeft size={24} className={activeTestimonial === 0 ? 'opacity-50' : ''} />
+              </button>
+              <button
+                onClick={() => setActiveTestimonial(Math.min(testimonials.length - 1, activeTestimonial + 1))}
+                className="pointer-events-auto p-2 rounded-full bg-background/80 border border-border hover:bg-background"
+                disabled={activeTestimonial === testimonials.length - 1}
+              >
+                <ChevronRight size={24} className={activeTestimonial === testimonials.length - 1 ? 'opacity-50' : ''} />
+              </button>
             </div>
           </div>
         </div>
