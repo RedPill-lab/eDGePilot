@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { QuantAnalysis } from '../../types';
 import { TrendingUp, BarChart2, Activity, AlertTriangle, Scale, ToggleLeft, ToggleRight } from 'lucide-react';
 import BacktestDateRangeSelector from './BacktestDateRangeSelector';
+import WalkForwardControls from './WalkForwardControls';
+import WalkForwardChart from './WalkForwardChart';
 import EquityCurveChart from './EquityCurveChart';
 
 type QuantAnalysisViewProps = {
@@ -10,6 +12,8 @@ type QuantAnalysisViewProps = {
 
 const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
   const [walkForwardEnabled, setWalkForwardEnabled] = useState(false);
+  const [splitRatio, setSplitRatio] = useState('2/1');
+  const [selectedRange, setSelectedRange] = useState({ start: new Date(), end: new Date() });
   const [backtestResults, setBacktestResults] = useState({
     winRate: data.winRate,
     maxDrawdown: data.maxDrawdown,
@@ -24,7 +28,7 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
   });
 
   const handleDateRangeChange = (range: { start: Date; end: Date }) => {
-    // Simulate new backtest results
+    setSelectedRange(range);
     const days = Math.floor((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24));
     
     setBacktestResults({
@@ -39,6 +43,10 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
       ),
       medianCurveIndex: 4
     });
+  };
+
+  const handleSplitRatioChange = (ratio: string, custom?: { trainDays: number; testDays: number }) => {
+    setSplitRatio(ratio);
   };
 
   // Format percentage
@@ -77,6 +85,17 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
         </div>
         
         <BacktestDateRangeSelector onRangeChange={handleDateRangeChange} />
+        
+        {walkForwardEnabled && (
+          <div className="mb-6">
+            <WalkForwardControls
+              enabled={walkForwardEnabled}
+              splitRatio={splitRatio as any}
+              totalDays={Math.floor((selectedRange.end.getTime() - selectedRange.start.getTime()) / (1000 * 60 * 60 * 24))}
+              onSplitChange={handleSplitRatioChange}
+            />
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Win Rate Card */}
@@ -145,17 +164,8 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
         {walkForwardEnabled && data.walkForward && (
           <div className="border border-border rounded-lg p-5 mb-6">
             <h3 className="text-md font-medium mb-4">Walk-Forward Analysis</h3>
+            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-              <div className="bg-card-foreground/5 p-4 rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Best Performance</h4>
-                <p className="text-2xl font-bold text-success">
-                  {formatPercent(data.walkForward.summary.bestWindow.return)}
-                </p>
-                <p className="text-xs text-foreground/70 mt-1">
-                  {new Date(data.walkForward.summary.bestWindow.start).toLocaleDateString()} - {new Date(data.walkForward.summary.bestWindow.end).toLocaleDateString()}
-                </p>
-              </div>
-              
               <div className="bg-card-foreground/5 p-4 rounded-lg">
                 <h4 className="text-sm font-medium mb-2">Strategy Consistency</h4>
                 <p className="text-2xl font-bold">
@@ -167,39 +177,27 @@ const QuantAnalysisView = ({ data }: QuantAnalysisViewProps) => {
               </div>
               
               <div className="bg-card-foreground/5 p-4 rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Best Window Return</h4>
+                <p className="text-2xl font-bold text-success">
+                  {formatPercent(data.walkForward.summary.bestWindow.testReturn)}
+                </p>
+                <p className="text-xs text-foreground/70 mt-1">
+                  {new Date(data.walkForward.summary.bestWindow.testStart).toLocaleDateString()} - {new Date(data.walkForward.summary.bestWindow.testEnd).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div className="bg-card-foreground/5 p-4 rounded-lg">
                 <h4 className="text-sm font-medium mb-2">Window Pass Rate</h4>
                 <p className="text-2xl font-bold">
                   {(data.walkForward.summary.passRate * 100).toFixed(0)}%
                 </p>
                 <p className="text-xs text-foreground/70 mt-1">
-                  Strategy held up in {Math.round(data.walkForward.results.length * data.walkForward.summary.passRate)}/{data.walkForward.results.length} windows
+                  Strategy held up in {Math.round(data.walkForward.windows.length * data.walkForward.summary.passRate)}/{data.walkForward.windows.length} windows
                 </p>
               </div>
             </div>
             
-            <div className="bg-card-foreground/5 p-4 rounded-lg">
-              <h4 className="text-sm font-medium mb-3">Window Performance</h4>
-              <div className="space-y-3">
-                {data.walkForward.results.map((result, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="w-32 text-sm">
-                      {new Date(result.windowStart).toLocaleDateString()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="h-2 bg-secondary/20 rounded-full">
-                        <div 
-                          className={`h-2 rounded-full ${result.passed ? 'bg-success' : 'bg-error'}`}
-                          style={{ width: `${Math.min(Math.abs(result.returnPct), 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className={`w-24 text-right text-sm ${result.returnPct >= 0 ? 'text-success' : 'text-error'}`}>
-                      {formatPercent(result.returnPct)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <WalkForwardChart windows={data.walkForward.windows} />
           </div>
         )}
 
