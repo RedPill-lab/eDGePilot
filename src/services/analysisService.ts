@@ -1,4 +1,4 @@
-import { Instrument, StrategyType, AnalysisStage } from '../types';
+import { Instrument, StrategyType, AnalysisStage, PropFirmSettings } from '../types';
 import { mockMacroAnalysis } from './mockData/macroAnalysisData';
 import { mockTechnicalAnalysis } from './mockData/technicalAnalysisData';
 import { mockQuantAnalysis } from './mockData/quantAnalysisData';
@@ -11,9 +11,17 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // Simulated step-by-step analysis pipeline
 export const runAnalysisPipeline = async (
   instrument: Instrument,
-  strategy: StrategyType
+  strategy: StrategyType,
+  propFirmSettings: PropFirmSettings | null
 ): Promise<AnalysisStage[]> => {
   const stages: AnalysisStage[] = [];
+  
+  // Adjust strategy based on remaining days in prop firm challenge
+  let adjustedStrategy = strategy;
+  if (propFirmSettings?.enabled && propFirmSettings.remainingDays <= 10) {
+    // Force intraday strategy for time-critical situations
+    adjustedStrategy = 'intraday';
+  }
   
   // Step 1: Macro Analysis
   await delay(2000);
@@ -22,12 +30,12 @@ export const runAnalysisPipeline = async (
   
   // Step 2: Technical Analysis
   await delay(2500);
-  const technicalAnalysis = mockTechnicalAnalysis(instrument, strategy);
+  const technicalAnalysis = mockTechnicalAnalysis(instrument, adjustedStrategy);
   stages.push({ type: 'technical', data: technicalAnalysis });
   
   // Step 3: Quant Analysis
   await delay(3000);
-  const quantAnalysis = mockQuantAnalysis(instrument, strategy, technicalAnalysis);
+  const quantAnalysis = mockQuantAnalysis(instrument, adjustedStrategy, technicalAnalysis);
   stages.push({ type: 'quant', data: quantAnalysis });
   
   // Step 4: Sentiment Analysis
@@ -39,16 +47,14 @@ export const runAnalysisPipeline = async (
   await delay(1500);
   const tradeSignal = generateTradeSignal(
     instrument,
-    strategy,
+    adjustedStrategy,
     macroAnalysis,
     technicalAnalysis,
     quantAnalysis,
-    sentimentAnalysis
+    sentimentAnalysis,
+    propFirmSettings
   );
   stages.push({ type: 'signal', data: tradeSignal });
   
   return stages;
 };
-
-// In a real application, we would make API calls to various services
-// For now, we're using mock data services to simulate the behavior

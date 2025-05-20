@@ -42,6 +42,7 @@ export type PropFirmSettings = {
   maxDailyDrawdown: number;
   overallDrawdown: number;
   profitTarget: number;
+  remainingDays: number;
 };
 
 export type BrokerSettings = {
