@@ -286,94 +286,57 @@ const Landing = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Free Plan */}
-            <div className="bg-card border border-border rounded-xl p-8">
-              <h3 className="text-2xl font-bold mb-2">Free</h3>
-              <p className="text-3xl font-bold mb-6">$0</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  EURUSD only
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  3 signals/day
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Macro + Technical Agent Preview
-                </li>
+            <div className="pricing-tier">
+              <h3>Free Plan <span className="price">$0/month</span></h3>
+              <ul>
+                <li>✅ Full AI Pipeline (Macro + Technical + Quant + Sentiment)</li>
+                <li>✅ 3 signals/day (EURUSD only)</li>
+                <li>✅ Dashboard preview</li>
+                <li>🚫 No Telegram alerts</li>
+                <li>🚫 No Prop Mode</li>
               </ul>
-              <Link to="/register" className="btn btn-outline w-full">
-                Start Free
+              <Link to="/register" className="cta-button">
+                Start Free — No Card
               </Link>
             </div>
             
             {/* Pro Plan */}
-            <div className="bg-primary/10 border-2 border-primary rounded-xl p-8 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-sm">
-                Most Popular
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Pro</h3>
-              <p className="text-3xl font-bold mb-6">$49<span className="text-lg">/mo</span></p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  All assets
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Prop Mode
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Quant Agent
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Telegram alerts
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Full UI Access
-                </li>
+            <div className="pricing-tier popular">
+              <div className="popular-badge">✨ Most Popular</div>
+              <h3>Pro Plan <span className="price">$49/month</span></h3>
+              <p className="text-sm font-medium mb-4">🔥 Everything in Free, plus:</p>
+              <ul>
+                <li>✅ All assets (Forex, Indices, Metals)</li>
+                <li>✅ Prop Mode (auto-drawdown enforcement)</li>
+                <li>✅ Advanced Quant Filters (backtest, R:R tuning)</li>
+                <li>✅ Telegram alerts</li>
+                <li>✅ Full historical analytics</li>
               </ul>
-              <Link to="/register" className="btn btn-primary w-full">
-                Get Started
+              <Link to="/register" className="cta-button">
+                Get Started →
               </Link>
             </div>
             
             {/* Edge+ Plan */}
-            <div className="bg-card border border-border rounded-xl p-8">
-              <h3 className="text-2xl font-bold mb-2">Edge+</h3>
-              <p className="text-3xl font-bold mb-6">$89<span className="text-lg">/mo</span></p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Everything in Pro
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Copytrading (coming soon)
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Signal analytics
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight size={16} className="mr-2 text-primary" />
-                  Multi-account support
-                </li>
+            <div className="pricing-tier early-access">
+              <div className="early-badge">🚀 Early Access</div>
+              <h3>Edge+ Plan <span className="price">$89/month</span></h3>
+              <p className="text-sm font-medium mb-4">⚡ Everything in Pro, plus:</p>
+              <ul>
+                <li>✅ Multi-account sync</li>
+                <li>✅ Copytrading (beta access)</li>
+                <li>✅ Priority feature requests</li>
+                <li>✅ Dedicated support</li>
               </ul>
-              <button className="btn btn-outline w-full" disabled>
-                Coming Soon
+              <button className="cta-button btn-outline" disabled>
+                Join Waitlist
               </button>
             </div>
           </div>
           
-          <div className="text-center mt-8">
-            <p className="text-foreground/70">No card required. 7-day refund guarantee.</p>
-            <p className="text-primary mt-2">Prop firm traders: 20% off first 3 months</p>
-          </div>
+          <p className="disclaimer">
+            No card required. 7-day refund guarantee for Pro/Edge+.
+          </p>
         </div>
       </section>
       
