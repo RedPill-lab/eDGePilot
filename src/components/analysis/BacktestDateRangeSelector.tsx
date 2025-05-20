@@ -1,4 +1,3 @@
-```typescript
 import { useState } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
@@ -120,4 +119,3 @@ const BacktestDateRangeSelector = ({ onRangeChange }: BacktestDateRangeSelectorP
 };
 
 export default BacktestDateRangeSelector;
-```
