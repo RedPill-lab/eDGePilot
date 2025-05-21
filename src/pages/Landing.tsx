@@ -328,7 +328,8 @@ const Landing = () => {
       {/* Pricing */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+          <h2 className="text-3xl font-bold text-center mb-4">Simple, Transparent Pricing</h2>
+          <p className="text-center text-lg text-foreground/70 mb-12">Choose the plan that fits your trading style</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Free Plan */}
@@ -361,6 +362,9 @@ const Landing = () => {
               <Link to="/register" className="cta-button">
                 Get Started →
               </Link>
+              <p className="mt-4 text-xs text-center text-success">
+                🎯 Most prop traders choose this plan
+              </p>
             </div>
             
             {/* Edge+ Plan */}
@@ -377,12 +381,20 @@ const Landing = () => {
               <button className="cta-button btn-outline" disabled>
                 Join Waitlist
               </button>
+              <p className="mt-4 text-xs text-center text-accent">
+                💎 Limited spots available
+              </p>
             </div>
           </div>
           
-          <p className="disclaimer">
-            No card required. 7-day refund guarantee for Pro/Edge+.
-          </p>
+          <div className="mt-12 text-center">
+            <p className="text-sm text-foreground/70 mb-4">
+              No card required. 7-day refund guarantee for Pro/Edge+.
+            </p>
+            <div className="inline-block bg-success/10 text-success px-4 py-2 rounded-full text-sm">
+              🎉 Prop firm traders: 20% off first 3 months with code PROP20
+            </div>
+          </div>
         </div>
       </section>
       
