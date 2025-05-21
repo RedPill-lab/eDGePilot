@@ -17,7 +17,7 @@ const LoginForm = () => {
     try {
       await signIn(email, password);
     } catch (err) {
-      setError('Invalid email or password');
+      setError('Invalid email or password. Please check your credentials and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -104,8 +104,8 @@ const LoginForm = () => {
       <div className="mt-4 text-center text-sm">
         <p>
           Demo accounts: <br />
-          <code className="bg-secondary/20 p-1 rounded">demo@example.com / password123</code> (Free)<br />
-          <code className="bg-secondary/20 p-1 rounded">premium@example.com / password123</code> (Premium)
+          <code className="bg-secondary/20 p-1 rounded">starter@example.com / Demo123!</code> (Free)<br />
+          <code className="bg-secondary/20 p-1 rounded">pro@example.com / Demo123!</code> (Premium)
         </p>
       </div>
     </div>
