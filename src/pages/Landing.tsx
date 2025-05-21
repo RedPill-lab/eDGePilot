@@ -332,7 +332,7 @@ const Landing = () => {
           <p className="text-center text-lg text-foreground/70 mb-12">Choose the plan that fits your trading style</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Free Plan */}
+            {/* Starter Plan */}
             <div className="pricing-tier">
               <h3>Starter <span className="price">$0/month</span></h3>
               <ul>
@@ -340,18 +340,18 @@ const Landing = () => {
                 <li>✅ 3 signals/day (EURUSD only)</li>
                 <li>✅ Dashboard preview</li>
                 <li>🚫 No Telegram alerts</li>
-                <li>🚫 No Prop Mode</li>
+                <li>🚫 No advanced features</li>
               </ul>
               <Link to="/register" className="cta-button">
                 Start Free — No Card
               </Link>
             </div>
             
-            {/* Funded Tier */}
+            {/* Pro Plan */}
             <div className="pricing-tier popular">
               <div className="popular-badge">✨ Most Popular</div>
-              <h3>Funded Tier <span className="price">$79/month</span></h3>
-              <p className="text-sm font-medium mb-4">🔥 Everything in Free, plus:</p>
+              <h3>Pro <span className="price">$79/month</span></h3>
+              <p className="text-sm font-medium mb-4">🔥 Everything in Starter, plus:</p>
               <ul>
                 <li>✅ Unlimited signals</li>
                 <li>✅ All assets (Forex, Indices, Metals)</li>
@@ -368,10 +368,10 @@ const Landing = () => {
               </p>
             </div>
             
-            {/* Institutional Tier */}
+            {/* Edge+ Plan */}
             <div className="pricing-tier">
-              <h3>Institutional <span className="price">$149/month</span></h3>
-              <p className="text-sm font-medium mb-4">⚡ Everything in Funded, plus:</p>
+              <h3>Edge+ <span className="price">$149/month</span></h3>
+              <p className="text-sm font-medium mb-4">⚡ Everything in Pro, plus:</p>
               <ul>
                 <li>✅ Live strategy audits</li>
                 <li>✅ Broker spread arbitrage alerts</li>
@@ -384,9 +384,9 @@ const Landing = () => {
             </div>
           </div>
           
-          {/* Add-on */}
+          {/* Prop Tools Add-on */}
           <div className="mt-12 max-w-lg mx-auto text-center p-6 bg-card-foreground/5 rounded-xl">
-            <h3 className="text-lg font-semibold mb-2">Challenge Pass Add-On</h3>
+            <h3 className="text-lg font-semibold mb-2">Prop Tools Add-On</h3>
             <p className="text-sm text-foreground/70 mb-4">
               Supercharge your prop firm challenge with advanced analytics
             </p>
@@ -406,7 +406,7 @@ const Landing = () => {
               No card required for free plan. 7-day money-back guarantee on all paid plans.
             </p>
             <div className="inline-block bg-success/10 text-success px-4 py-2 rounded-full text-sm">
-              🎉 Limited time: Try Funded Tier for $1 (7-day trial)
+              🎉 Limited time: Try Pro for $1 (7-day trial)
             </div>
           </div>
         </div>
@@ -576,5 +576,3 @@ const Landing = () => {
 };
 
 export default Landing;
-
-export default Landing

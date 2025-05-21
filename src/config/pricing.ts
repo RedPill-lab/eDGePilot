@@ -20,8 +20,8 @@ export const pricingConfig: PricingConfig = {
     },
     {
       id: PlanType.FUNDED,
-      name: 'Funded Tier',
-      description: 'For serious prop traders',
+      name: 'Pro',
+      description: 'For serious traders',
       monthlyPrice: 79,
       annualPrice: 799,
       features: [
@@ -40,11 +40,11 @@ export const pricingConfig: PricingConfig = {
     },
     {
       id: PlanType.INSTITUTIONAL,
-      name: 'Institutional',
-      description: 'Enterprise-grade trading intelligence',
+      name: 'Edge+',
+      description: 'Advanced trading intelligence',
       monthlyPrice: 149,
       features: [
-        { name: 'All Funded Tier features', included: true },
+        { name: 'All Pro features', included: true },
         { name: 'Live strategy audits', included: true },
         { name: 'Broker spread arbitrage alerts', included: true },
         { name: '1:1 onboarding call', included: true },
@@ -57,8 +57,8 @@ export const pricingConfig: PricingConfig = {
   ],
   addOns: [
     {
-      id: 'challenge-pass',
-      name: 'Challenge Pass',
+      id: 'prop-tools',
+      name: 'Prop Tools',
       description: 'Essential tools for prop firm challenges',
       price: 29,
       features: [
