@@ -8,7 +8,7 @@
 @tailwind utilities;
 
 :root {
-  --primary: 199 89% 48%;   /* #0EA5E9 - Teal */
+  --primary: 199 89% 48%;   /* #0EA5E9 - Cyan */
   --secondary: 215 25% 27%; /* #344054 - Slate */
   --accent: 38 92% 50%;     /* #F59E0B - Gold */
   --success: 142 70% 40%;   /* #10B981 - Green */
@@ -20,7 +20,7 @@
   --card-foreground: 210 20% 98%; /* #F8FAFC - White */
   --border: 215 25% 27%;    /* #344054 - Slate */
   --input: 215 25% 27%;     /* #344054 - Slate */
-  --ring: 199 89% 48%;      /* #0EA5E9 - Teal */
+  --ring: 199 89% 48%;      /* #0EA5E9 - Cyan */
 }
 
 body {
@@ -89,14 +89,18 @@ body {
 
   /* Pricing tier styles */
   .pricing-tier {
-    @apply bg-card border border-border rounded-xl p-8 relative;
+    @apply bg-card border border-border rounded-xl p-8 relative transition-all duration-200 hover:scale-[1.02];
   }
 
   .pricing-tier.popular {
     @apply bg-primary/10 border-2 border-primary;
   }
 
-  .pricing-tier.early-access {
+  .pricing-tier:first-child {
+    @apply bg-card/50;
+  }
+
+  .pricing-tier:last-child {
     @apply bg-accent/10 border-2 border-accent;
   }
 
@@ -121,15 +125,19 @@ body {
   }
 
   .pricing-tier.popular .cta-button {
-    @apply btn-primary;
+    @apply bg-primary text-white hover:bg-primary/90;
+  }
+
+  .pricing-tier:last-child .cta-button {
+    @apply bg-accent text-white hover:bg-accent/90;
+  }
+
+  .pricing-tier:first-child .cta-button {
+    @apply bg-card-foreground/10 text-white hover:bg-card-foreground/20;
   }
 
   .pricing-tier .popular-badge {
     @apply absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-sm;
-  }
-
-  .pricing-tier .early-badge {
-    @apply absolute -top-3 left-1/2 transform -translate-x-1/2 bg-accent text-white px-3 py-1 rounded-full text-sm;
   }
 
   .pricing-tier p.disclaimer {
