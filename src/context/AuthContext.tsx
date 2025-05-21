@@ -1,30 +1,64 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types';
-import { mockLogin, mockRegister, mockLogout, mockGetCurrentUser } from '../services/authService';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
+import { PlanType } from '../types/pricing';
+
+type Profile = {
+  id: string;
+  plan: PlanType;
+  stripe_customer_id: string | null;
+};
+
+type AuthUser = User & {
+  profile?: Profile;
+};
 
 type AuthContextType = {
-  user: User | null;
+  user: AuthUser | null;
+  profile: Profile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
+  signOut: () => Promise<void>;
   error: string | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch profile data
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      return null;
+    }
+  };
+
+  // Initialize auth state
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const currentUser = await mockGetCurrentUser();
-        if (currentUser) {
-          setUser(currentUser);
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id);
+          setUser({ ...session.user, profile });
+          setProfile(profile);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
@@ -34,14 +68,64 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     initAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id);
+          setUser({ ...session.user, profile });
+          setProfile(profile);
+        } else {
+          setUser(null);
+          setProfile(null);
+        }
+        setIsLoading(false);
+      }
+    );
+
+    // Subscribe to profile changes
+    const profileSubscription = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: user ? `id=eq.${user.id}` : undefined
+        },
+        async (payload) => {
+          if (payload.new && user) {
+            setProfile(payload.new as Profile);
+            setUser(prev => prev ? { ...prev, profile: payload.new as Profile } : null);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+      profileSubscription.unsubscribe();
+    };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      const user = await mockLogin(email, password);
-      setUser(user);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const profile = await fetchProfile(data.user.id);
+        setUser({ ...data.user, profile });
+        setProfile(profile);
+      }
     } catch (err) {
       setError('Invalid email or password');
       throw err;
@@ -50,27 +134,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const user = await mockRegister(name, email, password);
-      setUser(user);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const profile = await fetchProfile(data.user.id);
+        setUser({ ...data.user, profile });
+        setProfile(profile);
+      }
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError('Registration failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = async () => {
+  const signOut = async () => {
     setIsLoading(true);
     try {
-      await mockLogout();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       setUser(null);
+      setProfile(null);
     } catch (err) {
-      setError('Logout failed');
+      setError('Sign out failed');
       throw err;
     } finally {
       setIsLoading(false);
@@ -81,12 +182,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        profile,
         isAuthenticated: !!user,
         isLoading,
-        login,
-        register,
-        logout,
-        error,
+        signIn,
+        signUp,
+        signOut,
+        error
       }}
     >
       {children}
