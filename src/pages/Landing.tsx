@@ -537,6 +537,12 @@ const Landing = () => {
               </a>
             </div>
           </div>
+          
+          <div className="mt-8 text-sm text-foreground/50 text-center max-w-3xl mx-auto">
+            <p>
+              Disclaimer: The information provided by EdgePilot is for educational and informational purposes only and does not constitute financial or investment advice. Trading involves substantial risk and may not be suitable for all investors. Always consult with a qualified financial advisor before making any trading decisions.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
