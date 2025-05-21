@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import toast from 'react-hot-toast';
 
 const RegisterForm = () => {
   const [name, setName] = useState('');
@@ -9,7 +11,7 @@ const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { register } = useAuth();
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +30,25 @@ const RegisterForm = () => {
     setIsLoading(true);
     
     try {
-      await register(name, email, password);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        toast.success('Check your inbox to verify email');
+        navigate('/login');
+      }
     } catch (err) {
+      console.error('Registration error:', err);
       setError('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -37,18 +56,18 @@ const RegisterForm = () => {
   };
   
   return (
-    <div className="bg-card p-8 rounded-lg shadow-lg w-full max-w-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+    <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-cyan-50">Create an Account</h2>
       
       {error && (
-        <div className="mb-4 p-3 bg-error/20 text-error rounded-md text-sm">
+        <div className="mb-4 p-3 bg-red-500/20 text-red-400 rounded-md text-sm">
           {error}
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium mb-1">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-1 text-cyan-50">
             Full Name
           </label>
           <input
@@ -56,14 +75,14 @@ const RegisterForm = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="John Doe"
             required
           />
         </div>
         
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium mb-1">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-1 text-cyan-50">
             Email
           </label>
           <input
@@ -71,14 +90,14 @@ const RegisterForm = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="your@email.com"
             required
           />
         </div>
         
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium mb-1 text-cyan-50">
             Password
           </label>
           <input
@@ -86,14 +105,14 @@ const RegisterForm = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="••••••••"
             required
           />
         </div>
         
-        <div className="mb-6">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1 text-cyan-50">
             Confirm Password
           </label>
           <input
@@ -101,7 +120,7 @@ const RegisterForm = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="input"
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-600"
             placeholder="••••••••"
             required
           />
@@ -109,7 +128,7 @@ const RegisterForm = () => {
         
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className="w-full bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -125,12 +144,6 @@ const RegisterForm = () => {
           )}
         </button>
       </form>
-      
-      <div className="mt-4 text-center text-sm">
-        <p className="text-secondary-foreground">
-          By registering, you agree to our Terms of Service and Privacy Policy.
-        </p>
-      </div>
     </div>
   );
 };
