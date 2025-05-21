@@ -7,7 +7,7 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { login } = useAuth();
+  const { signIn, devLogin } = useAuth();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      await signIn(email, password);
     } catch (err) {
       setError('Invalid email or password');
     } finally {
@@ -66,7 +66,7 @@ const LoginForm = () => {
         
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className="btn btn-primary w-full mb-4"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -81,6 +81,24 @@ const LoginForm = () => {
             'Login'
           )}
         </button>
+
+        {/* Development Quick Login Buttons */}
+        <div className="flex space-x-4 mb-6">
+          <button
+            type="button"
+            onClick={() => devLogin('free')}
+            className="btn btn-outline flex-1"
+          >
+            Login as Free
+          </button>
+          <button
+            type="button"
+            onClick={() => devLogin('premium')}
+            className="btn btn-outline flex-1"
+          >
+            Login as Premium
+          </button>
+        </div>
       </form>
       
       <div className="mt-4 text-center text-sm">

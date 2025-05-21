@@ -22,6 +22,7 @@ type AuthContextType = {
   signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
   signOut: () => Promise<void>;
   error: string | null;
+  devLogin: (type: 'free' | 'premium') => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +32,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Development direct login
+  const devLogin = (type: 'free' | 'premium') => {
+    const mockUser = {
+      id: type === 'free' ? '00000000-0000-0000-0000-000000000001' : '00000000-0000-0000-0000-000000000002',
+      email: type === 'free' ? 'demo@example.com' : 'premium@example.com',
+      profile: {
+        id: type === 'free' ? '00000000-0000-0000-0000-000000000001' : '00000000-0000-0000-0000-000000000002',
+        plan: type === 'free' ? PlanType.STARTER : PlanType.FUNDED,
+        stripe_customer_id: type === 'free' ? 'cus_demo1' : 'cus_demo2'
+      }
+    } as AuthUser;
+
+    setUser(mockUser);
+    setProfile(mockUser.profile);
+    setIsLoading(false);
+  };
 
   // Fetch profile data
   const fetchProfile = async (userId: string) => {
@@ -188,7 +206,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signUp,
         signOut,
-        error
+        error,
+        devLogin
       }}
     >
       {children}
