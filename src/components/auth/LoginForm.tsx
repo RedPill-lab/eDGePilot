@@ -17,7 +17,10 @@ const LoginForm = () => {
     try {
       await signIn(email, password);
     } catch (err) {
-      setError('Invalid email or password. Please check your credentials and try again.');
+      setError(
+        'Unable to sign in. Please verify your email and password are correct. ' +
+        'If you continue to have trouble, try using one of the demo accounts below.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -28,7 +31,7 @@ const LoginForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
       
       {error && (
-        <div className="mb-4 p-3 bg-error/20 text-error rounded-md text-sm">
+        <div className="mb-4 p-4 bg-error/20 text-error rounded-md text-sm">
           {error}
         </div>
       )}
@@ -101,12 +104,20 @@ const LoginForm = () => {
         </div>
       </form>
       
-      <div className="mt-4 text-center text-sm">
-        <p>
-          Demo accounts: <br />
-          <code className="bg-secondary/20 p-1 rounded">starter@example.com / Demo123!</code> (Free)<br />
-          <code className="bg-secondary/20 p-1 rounded">pro@example.com / Demo123!</code> (Premium)
-        </p>
+      <div className="mt-6 space-y-4">
+        <div className="text-center text-sm">
+          <p className="font-medium mb-2">Demo Accounts</p>
+          <div className="space-y-2">
+            <div className="bg-secondary/10 p-3 rounded-md">
+              <p className="font-medium text-xs text-secondary mb-1">Free Account</p>
+              <code>starter@example.com / Demo123!</code>
+            </div>
+            <div className="bg-secondary/10 p-3 rounded-md">
+              <p className="font-medium text-xs text-secondary mb-1">Premium Account</p>
+              <code>pro@example.com / Demo123!</code>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
