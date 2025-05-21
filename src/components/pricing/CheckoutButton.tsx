@@ -1,64 +1,53 @@
-```tsx
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { usePricing } from '../../hooks/usePricing';
-import { PlanType, BillingInterval } from '../../types/pricing';
+import { createCheckoutSession } from '../../lib/stripe';
 import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface CheckoutButtonProps {
-  planId: PlanType;
-  billingInterval?: BillingInterval;
+  priceId: string;
+  mode?: 'subscription' | 'payment';
   className?: string;
   children: React.ReactNode;
 }
 
-export const CheckoutButton = ({
-  planId,
-  billingInterval = BillingInterval.MONTHLY,
+export function CheckoutButton({
+  priceId,
+  mode = 'subscription',
   className = '',
   children
-}: CheckoutButtonProps) => {
-  const { isAuthenticated } = useAuth();
-  const { startTrial, subscribe, isLoading } = usePricing();
-  const [error, setError] = useState<string | null>(null);
+}: CheckoutButtonProps) {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
-    if (!isAuthenticated) {
-      window.location.href = '/login?redirect=/pricing';
+    if (!user) {
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
       return;
     }
 
-    setError(null);
+    setIsLoading(true);
     try {
-      const plan = pricingConfig.plans.find(p => p.id === planId);
-      if (plan?.trialEnabled) {
-        await startTrial(planId);
-      } else {
-        await subscribe(planId, billingInterval);
-      }
+      await createCheckoutSession(priceId, mode);
     } catch (err) {
       console.error('Checkout error:', err);
-      setError('Failed to start checkout. Please try again.');
+      toast.error('Failed to start checkout. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <button
-        onClick={handleClick}
-        disabled={isLoading}
-        className={`relative ${className}`}
-      >
-        {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          children
-        )}
-      </button>
-      {error && (
-        <p className="text-sm text-error mt-2">{error}</p>
+    <button
+      onClick={handleClick}
+      disabled={isLoading}
+      className={`relative ${className}`}
+    >
+      {isLoading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        children
       )}
-    </>
+    </button>
   );
-};
-```
+}
