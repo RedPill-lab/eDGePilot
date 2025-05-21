@@ -334,7 +334,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Free Plan */}
             <div className="pricing-tier">
-              <h3>Free Plan <span className="price">$0/month</span></h3>
+              <h3>Starter <span className="price">$0/month</span></h3>
               <ul>
                 <li>✅ Full AI Pipeline (Macro + Technical + Quant + Sentiment)</li>
                 <li>✅ 3 signals/day (EURUSD only)</li>
@@ -347,52 +347,66 @@ const Landing = () => {
               </Link>
             </div>
             
-            {/* Pro Plan */}
+            {/* Funded Tier */}
             <div className="pricing-tier popular">
               <div className="popular-badge">✨ Most Popular</div>
-              <h3>Pro Plan <span className="price">$49/month</span></h3>
+              <h3>Funded Tier <span className="price">$79/month</span></h3>
               <p className="text-sm font-medium mb-4">🔥 Everything in Free, plus:</p>
               <ul>
+                <li>✅ Unlimited signals</li>
                 <li>✅ All assets (Forex, Indices, Metals)</li>
-                <li>✅ Prop Mode (auto-drawdown enforcement)</li>
-                <li>✅ Advanced Quant Filters (backtest, R:R tuning)</li>
+                <li>✅ Prop Mode + Broker Spreads</li>
+                <li>✅ 100+ strategy backtests</li>
+                <li>✅ Custom agent workflows</li>
                 <li>✅ Telegram alerts</li>
-                <li>✅ Full historical analytics</li>
               </ul>
               <Link to="/register" className="cta-button">
-                Get Started →
+                Try 7 Days for $1 →
               </Link>
-              <p className="mt-4 text-xs text-center text-success">
-                🎯 Most prop traders choose this plan
+              <p className="mt-2 text-xs text-center text-foreground/70">
+                or save 15% yearly ($799/year)
               </p>
             </div>
             
-            {/* Edge+ Plan */}
-            <div className="pricing-tier early-access">
-              <div className="early-badge">🚀 Early Access</div>
-              <h3>Edge+ Plan <span className="price">$89/month</span></h3>
-              <p className="text-sm font-medium mb-4">⚡ Everything in Pro, plus:</p>
+            {/* Institutional Tier */}
+            <div className="pricing-tier">
+              <h3>Institutional <span className="price">$149/month</span></h3>
+              <p className="text-sm font-medium mb-4">⚡ Everything in Funded, plus:</p>
               <ul>
-                <li>✅ Multi-account sync</li>
-                <li>✅ Copytrading (beta access)</li>
-                <li>✅ Priority feature requests</li>
-                <li>✅ Dedicated support</li>
+                <li>✅ Live strategy audits</li>
+                <li>✅ Broker spread arbitrage alerts</li>
+                <li>✅ 1:1 onboarding call</li>
+                <li>✅ Priority support</li>
               </ul>
-              <button className="cta-button btn-outline" disabled>
-                Join Waitlist
+              <button className="cta-button btn-outline">
+                Contact Sales
               </button>
-              <p className="mt-4 text-xs text-center text-accent">
-                💎 Limited spots available
-              </p>
             </div>
+          </div>
+          
+          {/* Add-on */}
+          <div className="mt-12 max-w-lg mx-auto text-center p-6 bg-card-foreground/5 rounded-xl">
+            <h3 className="text-lg font-semibold mb-2">Challenge Pass Add-On</h3>
+            <p className="text-sm text-foreground/70 mb-4">
+              Supercharge your prop firm challenge with advanced analytics
+            </p>
+            <div className="text-xl font-bold text-primary mb-4">$29/month</div>
+            <ul className="text-sm space-y-2 mb-6">
+              <li>✅ FTMO/MFF challenge analytics</li>
+              <li>✅ Drawdown tracking</li>
+              <li>✅ Simulated payout reports</li>
+            </ul>
+            <button className="btn btn-outline btn-sm">
+              Add to Any Plan
+            </button>
           </div>
           
           <div className="mt-12 text-center">
             <p className="text-sm text-foreground/70 mb-4">
-              No card required. 7-day refund guarantee for Pro/Edge+.
+              No card required for free plan. 7-day money-back guarantee on all paid plans.
             </p>
             <div className="inline-block bg-success/10 text-success px-4 py-2 rounded-full text-sm">
-              🎉 Prop firm traders: 20% off first 3 months with code PROP20
+              🎉 Limited time: Try Funded Tier for $1 (7-day trial)
             </div>
           </div>
         </div>
