@@ -89,17 +89,17 @@ const LoginForm = () => {
         <div className="flex space-x-4 mb-6">
           <button
             type="button"
-            onClick={() => devLogin('free')}
+            onClick={() => devLogin('starter')}
             className="btn btn-outline flex-1"
           >
-            Login as Free
+            Login as Starter
           </button>
           <button
             type="button"
-            onClick={() => devLogin('premium')}
+            onClick={() => devLogin('pro')}
             className="btn btn-outline flex-1"
           >
-            Login as Premium
+            Login as Pro
           </button>
         </div>
       </form>
@@ -109,11 +109,11 @@ const LoginForm = () => {
           <p className="font-medium mb-2">Demo Accounts</p>
           <div className="space-y-2">
             <div className="bg-secondary/10 p-3 rounded-md">
-              <p className="font-medium text-xs text-secondary mb-1">Free Account</p>
+              <p className="font-medium text-xs text-secondary mb-1">Starter Account</p>
               <code>starter@example.com / Demo123!</code>
             </div>
             <div className="bg-secondary/10 p-3 rounded-md">
-              <p className="font-medium text-xs text-secondary mb-1">Premium Account</p>
+              <p className="font-medium text-xs text-secondary mb-1">Pro Account</p>
               <code>pro@example.com / Demo123!</code>
             </div>
           </div>
