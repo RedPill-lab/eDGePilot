@@ -18,8 +18,8 @@ const LoginForm = () => {
       await signIn(email, password);
     } catch (err) {
       setError(
-        'Unable to sign in. Please verify your email and password are correct. ' +
-        'If you continue to have trouble, try using one of the demo accounts below.'
+        'Invalid login credentials. Please check your email and password carefully. ' +
+        'For testing, you can use one of the demo accounts below.'
       );
     } finally {
       setIsLoading(false);
@@ -36,8 +36,8 @@ const LoginForm = () => {
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
             Email
           </label>
@@ -46,13 +46,13 @@ const LoginForm = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="input w-full"
             placeholder="your@email.com"
             required
           />
         </div>
         
-        <div className="mb-6">
+        <div>
           <label htmlFor="password" className="block text-sm font-medium mb-1">
             Password
           </label>
@@ -61,7 +61,7 @@ const LoginForm = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
+            className="input w-full"
             placeholder="••••••••"
             required
           />
@@ -69,7 +69,7 @@ const LoginForm = () => {
         
         <button
           type="submit"
-          className="btn btn-primary w-full mb-4"
+          className="btn btn-primary w-full"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -84,37 +84,43 @@ const LoginForm = () => {
             'Login'
           )}
         </button>
-
-        {/* Development Quick Login Buttons */}
-        <div className="flex space-x-4 mb-6">
-          <button
-            type="button"
-            onClick={() => devLogin('starter')}
-            className="btn btn-outline flex-1"
-          >
-            Login as Starter
-          </button>
-          <button
-            type="button"
-            onClick={() => devLogin('pro')}
-            className="btn btn-outline flex-1"
-          >
-            Login as Pro
-          </button>
-        </div>
       </form>
-      
-      <div className="mt-6 space-y-4">
-        <div className="text-center text-sm">
-          <p className="font-medium mb-2">Demo Accounts</p>
-          <div className="space-y-2">
-            <div className="bg-secondary/10 p-3 rounded-md">
-              <p className="font-medium text-xs text-secondary mb-1">Starter Account</p>
-              <code>starter@example.com / Demo123!</code>
+
+      <div className="mt-8 pt-6 border-t border-border">
+        <h3 className="text-lg font-semibold text-center mb-4">Demo Accounts</h3>
+        
+        <div className="space-y-4">
+          <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-secondary">Starter Account</span>
+              <button
+                type="button"
+                onClick={() => devLogin('starter')}
+                className="btn btn-sm btn-secondary"
+              >
+                Quick Login
+              </button>
             </div>
-            <div className="bg-secondary/10 p-3 rounded-md">
-              <p className="font-medium text-xs text-secondary mb-1">Pro Account</p>
-              <code>pro@example.com / Demo123!</code>
+            <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
+              <div>Email: starter@example.com</div>
+              <div>Password: Demo123!</div>
+            </div>
+          </div>
+
+          <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-secondary">Pro Account</span>
+              <button
+                type="button"
+                onClick={() => devLogin('pro')}
+                className="btn btn-sm btn-secondary"
+              >
+                Quick Login
+              </button>
+            </div>
+            <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
+              <div>Email: pro@example.com</div>
+              <div>Password: Demo123!</div>
             </div>
           </div>
         </div>
