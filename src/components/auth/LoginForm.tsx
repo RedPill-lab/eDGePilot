@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -7,7 +8,8 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { signIn, devLogin } = useAuth();
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,11 +18,34 @@ const LoginForm = () => {
     
     try {
       await signIn(email, password);
+      navigate('/dashboard');
     } catch (err) {
-      setError(
-        'Invalid login credentials. Please check your email and password carefully. ' +
-        'For testing, you can use one of the demo accounts below.'
-      );
+      setError('Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async (type: 'starter' | 'pro') => {
+    setError(null);
+    setIsLoading(true);
+    
+    const credentials = {
+      starter: {
+        email: 'starter@example.com',
+        password: 'Demo123!'
+      },
+      pro: {
+        email: 'pro@example.com',
+        password: 'Demo123!'
+      }
+    };
+    
+    try {
+      await signIn(credentials[type].email, credentials[type].password);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Quick login failed');
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +120,7 @@ const LoginForm = () => {
               <span className="text-sm font-medium text-secondary">Starter Account</span>
               <button
                 type="button"
-                onClick={() => devLogin('starter')}
+                onClick={() => handleQuickLogin('starter')}
                 className="btn btn-sm btn-secondary"
               >
                 Quick Login
@@ -112,7 +137,7 @@ const LoginForm = () => {
               <span className="text-sm font-medium text-secondary">Pro Account</span>
               <button
                 type="button"
-                onClick={() => devLogin('pro')}
+                onClick={() => handleQuickLogin('pro')}
                 className="btn btn-sm btn-secondary"
               >
                 Quick Login
