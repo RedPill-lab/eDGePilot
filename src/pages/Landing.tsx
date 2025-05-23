@@ -117,10 +117,193 @@ const Landing = () => {
     }
   ];
 
-  // ... (rest of the code remains exactly the same as in the original file)
-
   return (
-    // ... (rest of the JSX remains exactly the same as in the original file)
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      {/* Hero Section */}
+      <section className="px-6 py-24 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+              Trade with AI-Powered Edge Detection
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8">
+              Multi-agent AI system for prop traders. Validate your edge, scan market phases, and get institutional-grade analysis.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                to="/register"
+                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+              >
+                Start Free Trial <ArrowRight className="w-5 h-5" />
+              </Link>
+              <button className="px-8 py-4 bg-gray-800 rounded-lg font-semibold text-lg hover:bg-gray-700 transition-colors flex items-center gap-2">
+                Watch Demo <PlayCircle className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="px-6 py-24 sm:px-8 md:px-12 lg:px-16 xl:px-24 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <Brain className="w-12 h-12 text-blue-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Multi-Agent AI System</h3>
+              <p className="text-gray-400">5 specialized AI agents working together for comprehensive market analysis and trade validation.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <Target className="w-12 h-12 text-purple-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Edge Validator</h3>
+              <p className="text-gray-400">Validate your trading edge with Monte Carlo simulation and walk-forward analysis.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <LineChart className="w-12 h-12 text-green-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Market Phase Scanner</h3>
+              <p className="text-gray-400">Detect market regimes and adapt your strategy to current conditions.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <Shield className="w-12 h-12 text-red-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Prop Mode</h3>
+              <p className="text-gray-400">Automatic risk management tailored to your prop firm's rules and requirements.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <Globe2 className="w-12 h-12 text-yellow-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Macro Analysis</h3>
+              <p className="text-gray-400">Real-time news impact scoring and correlation analysis across markets.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur">
+              <BarChart2 className="w-12 h-12 text-pink-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Performance Analytics</h3>
+              <p className="text-gray-400">Deep insights into your trading performance with advanced metrics.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="px-6 py-24 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
+            Trusted by Prop Traders Worldwide
+          </h2>
+          <div className="relative">
+            <div className="flex items-center justify-between absolute top-1/2 -translate-y-1/2 w-full">
+              <button
+                onClick={() => setActiveTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors -translate-x-4"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setActiveTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors translate-x-4"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+              >
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4">
+                    <div className="max-w-3xl mx-auto text-center">
+                      <img
+                        src={testimonial.image}
+                        alt={testimonial.author}
+                        className="w-20 h-20 rounded-full mx-auto mb-6 object-cover"
+                      />
+                      <p className="text-xl sm:text-2xl text-gray-300 mb-6">"{testimonial.quote}"</p>
+                      <div>
+                        <p className="font-semibold">{testimonial.author}</p>
+                        <p className="text-gray-400">{testimonial.role}</p>
+                        <p className="text-gray-500">{testimonial.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center gap-2 mt-8">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTestimonial(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === activeTestimonial ? 'bg-blue-500' : 'bg-gray-600'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="px-6 py-24 sm:px-8 md:px-12 lg:px-16 xl:px-24 bg-gray-900/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="border border-gray-700 rounded-lg overflow-hidden"
+              >
+                <button
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-800/50 transition-colors"
+                  onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+                >
+                  <span className="font-medium">{faq.question}</span>
+                  <ChevronRight
+                    className={`w-5 h-5 transition-transform ${
+                      activeFaq === index ? 'rotate-90' : ''
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`px-6 transition-all duration-300 ease-in-out ${
+                    activeFaq === index ? 'py-4' : 'py-0 h-0'
+                  }`}
+                >
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-6 py-24 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+            Ready to Trade with an Edge?
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-300 mb-8">
+            Join thousands of prop traders using EdgePilot to validate their edge and improve their results.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link
+              to="/register"
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+            >
+              Start Free Trial <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              to="/contact"
+              className="px-8 py-4 bg-gray-800 rounded-lg font-semibold text-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+            >
+              Contact Sales <MessageSquare className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
