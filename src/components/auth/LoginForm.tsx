@@ -19,8 +19,13 @@ const LoginForm = () => {
     try {
       await signIn(email, password);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      // More descriptive error message
+      if (err?.message?.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please check your credentials and try again.');
+      } else {
+        setError('An error occurred while logging in. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +50,7 @@ const LoginForm = () => {
       await signIn(credentials[type].email, credentials[type].password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Quick login failed');
+      setError('Demo accounts are not available. Please register a new account or use your existing credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -111,45 +116,50 @@ const LoginForm = () => {
         </button>
       </form>
 
-      <div className="mt-8 pt-6 border-t border-border">
-        <h3 className="text-lg font-semibold text-center mb-4">Demo Accounts</h3>
-        
-        <div className="space-y-4">
-          <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-secondary">Starter Account</span>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('starter')}
-                className="btn btn-sm btn-secondary"
-              >
-                Quick Login
-              </button>
-            </div>
-            <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
-              <div>Email: starter@example.com</div>
-              <div>Password: Demo123!</div>
-            </div>
+      {import.meta.env.DEV && (
+        <div className="mt-8 pt-6 border-t border-border">
+          <h3 className="text-lg font-semibold text-center mb-4">Demo Accounts</h3>
+          <div className="bg-warning/20 text-warning p-4 rounded-lg mb-4 text-sm">
+            Note: Demo accounts need to be created in Supabase Auth before they can be used.
           </div>
-
-          <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-secondary">Pro Account</span>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('pro')}
-                className="btn btn-sm btn-secondary"
-              >
-                Quick Login
-              </button>
+          
+          <div className="space-y-4">
+            <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-secondary">Starter Account</span>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin('starter')}
+                  className="btn btn-sm btn-secondary"
+                >
+                  Quick Login
+                </button>
+              </div>
+              <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
+                <div>Email: starter@example.com</div>
+                <div>Password: Demo123!</div>
+              </div>
             </div>
-            <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
-              <div>Email: pro@example.com</div>
-              <div>Password: Demo123!</div>
+
+            <div className="bg-secondary/5 p-4 rounded-lg border border-secondary/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-secondary">Pro Account</span>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin('pro')}
+                  className="btn btn-sm btn-secondary"
+                >
+                  Quick Login
+                </button>
+              </div>
+              <div className="font-mono text-sm bg-secondary/10 p-2 rounded">
+                <div>Email: pro@example.com</div>
+                <div>Password: Demo123!</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
