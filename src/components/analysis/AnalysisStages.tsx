@@ -1,5 +1,5 @@
 import { useAnalysis } from '../../context/AnalysisContext';
-import { Check, Clock, TrendingUp, BarChart2, MessageSquare, ArrowRight, Activity } from 'lucide-react';
+import { Check, Clock, TrendingUp, BarChart2, MessageSquare, ArrowRight } from 'lucide-react';
 
 const AnalysisStages = () => {
   const { analysisState, goToStage } = useAnalysis();
@@ -15,27 +15,20 @@ const AnalysisStages = () => {
     { 
       id: 'technical', 
       name: 'Technical Analysis', 
-      description: 'Price patterns and Bollinger Bands', 
+      description: 'Price patterns and indicators', 
       icon: <TrendingUp size={20} /> 
     },
     { 
-      id: 'edge', 
-      name: 'Edge Validator', 
+      id: 'quant', 
+      name: 'Quantitative Analysis', 
       description: 'Backtesting and probabilities', 
       icon: <BarChart2 size={20} /> 
     },
     { 
       id: 'sentiment', 
-      name: 'Sentiment Pulse', 
+      name: 'Sentiment Analysis', 
       description: 'Market mood and positioning', 
       icon: <MessageSquare size={20} /> 
-    },
-    { 
-      id: 'phase', 
-      name: 'Market Phase Scan', 
-      description: 'Regime-based performance', 
-      icon: <Activity size={20} />,
-      proOnly: true
     },
     { 
       id: 'signal', 
