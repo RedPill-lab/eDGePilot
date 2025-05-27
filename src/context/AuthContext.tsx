@@ -67,19 +67,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Handle auth state reset
+  const resetAuthState = () => {
+    setUser(null);
+    setProfile(null);
+    setError(null);
+    setIsLoading(false);
+  };
+
   // Initialize auth state
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
         
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
           setUser({ ...session.user, profile });
           setProfile(profile);
+        } else {
+          resetAuthState();
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Auth initialization error:', err);
+        if (err.message?.includes('refresh_token_not_found')) {
+          resetAuthState();
+        }
       } finally {
         setIsLoading(false);
       }
@@ -90,15 +107,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user) {
-          const profile = await fetchProfile(session.user.id);
-          setUser({ ...session.user, profile });
-          setProfile(profile);
-        } else {
-          setUser(null);
-          setProfile(null);
+        try {
+          if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+            resetAuthState();
+            return;
+          }
+
+          if (event === 'TOKEN_REFRESHED' && !session) {
+            resetAuthState();
+            return;
+          }
+
+          if (session?.user) {
+            const profile = await fetchProfile(session.user.id);
+            setUser({ ...session.user, profile });
+            setProfile(profile);
+          } else {
+            resetAuthState();
+          }
+        } catch (err) {
+          console.error('Auth state change error:', err);
+          resetAuthState();
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     );
 
@@ -185,9 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
-      setUser(null);
-      setProfile(null);
+      resetAuthState();
     } catch (err) {
       setError('Sign out failed');
       throw err;
