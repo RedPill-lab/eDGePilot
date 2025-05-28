@@ -1,9 +1,20 @@
 import { Link } from 'react-router-dom';
-import { Shield, Target, Brain, Globe2, BarChart2, LineChart, MessageSquare, Clock, ArrowRight } from 'lucide-react';
+import { 
+  Shield, Target, Brain, Globe2, BarChart2, LineChart, 
+  MessageSquare, Clock, ArrowRight, PlayCircle 
+} from 'lucide-react';
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
+      {/* Floating Demo Button */}
+      <button 
+        className="fixed bottom-8 right-8 bg-[#F59E0B] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#F59E0B]/90 transition-colors z-50 flex items-center font-medium"
+      >
+        <PlayCircle size={20} className="mr-2" />
+        Try Demo
+      </button>
+
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
@@ -194,24 +205,60 @@ const Landing = () => {
             <div className="bg-[#0B1120] rounded-xl p-8 border border-gray-800">
               <h3 className="text-xl font-semibold text-gray-400 mb-6">Most Tools Stop Here...</h3>
               <ul className="space-y-4 text-gray-300">
-                <li>• Offer chatbots or basic pattern matchers</li>
-                <li>• Focus on crypto or stock retail dashboards</li>
-                <li>• Ignore broker realities</li>
-                <li>• Generic signals with unknown logic</li>
-                <li>• Can't help with challenge rules</li>
-                <li>• Copy-paste signals only</li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Offer chatbots or basic pattern matchers
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Focus on crypto or stock retail dashboards
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Ignore broker realities
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Generic signals with unknown logic
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Can't help with challenge rules
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-600 mr-3"></span>
+                  Copy-paste signals only
+                </li>
               </ul>
             </div>
             
             <div className="bg-[#0B1120] rounded-xl p-8 border border-gray-800">
               <h3 className="text-xl font-semibold text-[#0EA5E9] mb-6">EdgePilot Goes Further</h3>
               <ul className="space-y-4 text-gray-300">
-                <li>• Multi-agent AI system with explainable trade decisions</li>
-                <li>• Purpose-built for Forex, Indices, and Metals</li>
-                <li>• SL/TP adjusted to your broker's spread and execution style</li>
-                <li>• Trade rationale, macro context, and backtested probabilities included</li>
-                <li>• Prop Mode built-in: max daily loss, profit target & R:R filters</li>
-                <li>• Designed for smart execution — copytrading deployment coming soon</li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  Multi-agent AI system with explainable trade decisions
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  Purpose-built for Forex, Indices, and Metals
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  SL/TP adjusted to your broker's spread and execution style
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  Trade rationale, macro context, and backtested probabilities included
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  Prop Mode built-in: max daily loss, profit target & R:R filters
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] mr-3"></span>
+                  Designed for smart execution — copytrading deployment coming soon
+                </li>
               </ul>
             </div>
           </div>
@@ -228,7 +275,7 @@ const Landing = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Starter Plan */}
-            <div className="bg-gray-600/10 rounded-xl p-8 border border-gray-800">
+            <div className="bg-gray-600/10 rounded-xl p-8 border border-gray-800 shadow-xl hover:shadow-2xl transition-shadow">
               <div className="flex justify-between items-start mb-6">
                 <h3 className="text-2xl font-bold">Starter</h3>
                 <div className="text-right">
@@ -278,7 +325,7 @@ const Landing = () => {
             </div>
 
             {/* Pro Plan */}
-            <div className="bg-[#0EA5E9]/10 rounded-xl p-8 border-2 border-[#0EA5E9] relative">
+            <div className="bg-[#0EA5E9]/10 rounded-xl p-8 border-2 border-[#0EA5E9] shadow-xl hover:shadow-2xl transition-shadow relative transform hover:-translate-y-1">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#0EA5E9] text-white px-3 py-1 rounded-full text-sm">
                 ✨ Most Popular
               </div>
@@ -344,7 +391,7 @@ const Landing = () => {
             </div>
 
             {/* Edge+ Plan */}
-            <div className="bg-[#F59E0B]/10 rounded-xl p-8 border-2 border-[#F59E0B]">
+            <div className="bg-[#F59E0B]/10 rounded-xl p-8 border-2 border-[#F59E0B] shadow-xl hover:shadow-2xl transition-shadow">
               <div className="flex justify-between items-start mb-6">
                 <h3 className="text-2xl font-bold">Edge+</h3>
                 <div className="text-right">
