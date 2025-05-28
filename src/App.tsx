@@ -10,7 +10,6 @@ import Analysis from './pages/Analysis';
 import Copytrading from './pages/Copytrading';
 import Settings from './pages/Settings';
 import Layout from './components/layout/Layout';
-import Demo from './pages/Demo';
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/demo" element={<Demo />} />
             
             {/* Protected routes */}
             <Route element={<Layout />}>
