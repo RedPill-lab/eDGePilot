@@ -1,21 +1,12 @@
 import { Link } from 'react-router-dom';
 import { 
   Shield, Target, Brain, Globe2, BarChart2, LineChart, 
-  MessageSquare, Clock, ArrowRight, PlayCircle 
+  MessageSquare, Clock, ArrowRight
 } from 'lucide-react';
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
-      {/* Floating Demo Button */}
-      <Link 
-        to="/demo"
-        className="fixed bottom-8 right-8 bg-[#F59E0B] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#F59E0B]/90 transition-colors z-50 flex items-center font-medium cursor-pointer"
-      >
-        <PlayCircle size={20} className="mr-2" />
-        Try Demo
-      </Link>
-
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
@@ -387,7 +378,7 @@ const Landing = () => {
                   Try 7 Days for $5 →
                 </button>
                 <button className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors">
-                  Upgrade to Pro+
+                  Upgrade to Pro
                 </button>
                 <p className="text-center text-sm text-gray-400">
                   or save 15% yearly ($970/year)
