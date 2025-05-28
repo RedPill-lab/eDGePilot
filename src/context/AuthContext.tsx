@@ -175,7 +175,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) throw error;
 
+      // Create profile after successful signup
       if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              plan: metadata?.plan || 'starter'
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
         const userProfile = await fetchProfile(data.user.id);
         const enhancedUser = createEnhancedUser(data.user, userProfile);
         setUser(enhancedUser);
