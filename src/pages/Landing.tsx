@@ -8,12 +8,13 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
       {/* Floating Demo Button */}
-      <button 
-        className="fixed bottom-8 right-8 bg-[#F59E0B] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#F59E0B]/90 transition-colors z-50 flex items-center font-medium"
+      <Link 
+        to="/demo"
+        className="fixed bottom-8 right-8 bg-[#F59E0B] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#F59E0B]/90 transition-colors z-50 flex items-center font-medium cursor-pointer"
       >
         <PlayCircle size={20} className="mr-2" />
         Try Demo
-      </button>
+      </Link>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
@@ -319,9 +320,13 @@ const Landing = () => {
                 </li>
               </ul>
 
-              <button className="w-full py-3 px-4 border border-gray-700 rounded-lg text-white font-medium hover:bg-white/5 transition-colors">
-                Start Free — No Card
-              </button>
+              <Link 
+                to="/register" 
+                className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors cursor-pointer flex items-center justify-center"
+              >
+                Start Free — No Card Required
+                <ArrowRight size={20} className="ml-2" />
+              </Link>
             </div>
 
             {/* Pro Plan */}
