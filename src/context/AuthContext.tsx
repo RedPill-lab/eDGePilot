@@ -55,22 +55,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Create enhanced user object with required properties
-  const createEnhancedUser = (sessionUser: User, userProfile: Profile | null) => {
+  const createEnhancedUser = (sessionUser: User, userProfile: Profile | null): AuthUser => {
     return {
       ...sessionUser,
       profile: userProfile,
       name: sessionUser.user_metadata?.full_name || 'User',
       plan: userProfile?.plan || 'starter',
-      signalsRemaining: userProfile?.plan === 'free' ? DEFAULT_SIGNALS : Infinity
-    } as AuthUser;
-  };
-
-  // Handle auth state reset
-  const resetAuthState = () => {
-    setUser(null);
-    setProfile(null);
-    setError(null);
-    setIsLoading(false);
+      signalsRemaining: userProfile?.plan === 'starter' ? DEFAULT_SIGNALS : Infinity
+    };
   };
 
   // Initialize auth state
@@ -79,23 +71,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          throw sessionError;
-        }
+        if (sessionError) throw sessionError;
         
         if (session?.user) {
-          const profile = await fetchProfile(session.user.id);
-          const enhancedUser = createEnhancedUser(session.user, profile);
+          const userProfile = await fetchProfile(session.user.id);
+          const enhancedUser = createEnhancedUser(session.user, userProfile);
           setUser(enhancedUser);
-          setProfile(profile);
-        } else {
-          resetAuthState();
+          setProfile(userProfile);
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Auth initialization error:', err);
-        if (err.message?.includes('refresh_token_not_found')) {
-          resetAuthState();
-        }
+        setUser(null);
+        setProfile(null);
       } finally {
         setIsLoading(false);
       }
@@ -106,64 +93,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        try {
-          if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-            resetAuthState();
-            return;
-          }
-
-          if (event === 'TOKEN_REFRESHED' && !session) {
-            resetAuthState();
-            return;
-          }
-
-          if (session?.user) {
-            const profile = await fetchProfile(session.user.id);
-            const enhancedUser = createEnhancedUser(session.user, profile);
-            setUser(enhancedUser);
-            setProfile(profile);
-          } else {
-            resetAuthState();
-          }
-        } catch (err) {
-          console.error('Auth state change error:', err);
-          resetAuthState();
-        } finally {
-          setIsLoading(false);
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProfile(null);
+          return;
         }
+
+        if (session?.user) {
+          const userProfile = await fetchProfile(session.user.id);
+          const enhancedUser = createEnhancedUser(session.user, userProfile);
+          setUser(enhancedUser);
+          setProfile(userProfile);
+        }
+        
+        setIsLoading(false);
       }
     );
 
-    // Subscribe to profile changes
-    const profileSubscription = supabase
-      .channel('profile-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-          filter: user ? `id=eq.${user.id}` : undefined
-        },
-        async (payload) => {
-          if (payload.new && user) {
-            const newProfile = payload.new as Profile;
-            setProfile(newProfile);
-            setUser(prev => prev ? createEnhancedUser(prev, newProfile) : null);
-          }
-        }
-      )
-      .subscribe();
-
     return () => {
       subscription.unsubscribe();
-      profileSubscription.unsubscribe();
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
+    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -173,12 +128,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) throw error;
 
       if (data.user) {
-        const profile = await fetchProfile(data.user.id);
-        const enhancedUser = createEnhancedUser(data.user, profile);
+        const userProfile = await fetchProfile(data.user.id);
+        const enhancedUser = createEnhancedUser(data.user, userProfile);
         setUser(enhancedUser);
-        setProfile(profile);
+        setProfile(userProfile);
       }
     } catch (err) {
+      console.error('Sign in error:', err);
       setError('Invalid email or password');
       throw err;
     } finally {
@@ -189,6 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
     setIsLoading(true);
     setError(null);
+    
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -202,10 +159,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) throw error;
 
       if (data.user) {
-        const profile = await fetchProfile(data.user.id);
-        const enhancedUser = createEnhancedUser(data.user, profile);
+        const userProfile = await fetchProfile(data.user.id);
+        const enhancedUser = createEnhancedUser(data.user, userProfile);
         setUser(enhancedUser);
-        setProfile(profile);
+        setProfile(userProfile);
       }
     } catch (err) {
       setError('Registration failed');
@@ -220,7 +177,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      resetAuthState();
+      setUser(null);
+      setProfile(null);
     } catch (err) {
       setError('Sign out failed');
       throw err;
