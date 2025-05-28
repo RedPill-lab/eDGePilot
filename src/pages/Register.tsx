@@ -1,38 +1,39 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import RegisterForm from '../components/auth/RegisterForm';
 
 const Register = () => {
+  const [searchParams] = useSearchParams();
+  const [selectedPlan] = useState(searchParams.get('plan') || localStorage.getItem('selectedPlan'));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Clear the stored plan when component unmounts
+    return () => {
+      localStorage.removeItem('selectedPlan');
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4">
+    <div className="min-h-screen bg-[#0B1120] flex flex-col justify-center items-center px-4">
       <div className="text-center mb-8">
-        <div className="flex justify-center items-center mb-2">
-          <svg
-            viewBox="0 0 24 24"
-            width="40"
-            height="40"
-            className="text-primary"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M17 6h-5l2 5-2 5h5" />
-            <path d="M10 6H5l2 5-2 5h5" />
-          </svg>
-        </div>
-        <h1 className="text-3xl font-bold">TradeSmart</h1>
-        <p className="text-foreground/70 mt-2">
-          Create your account to access AI-powered trading signals
+        <img src="/logo.png" alt="EdgePilot" className="h-16 w-auto mx-auto mb-4" />
+        <h1 className="text-3xl font-bold text-white">EdgePilot</h1>
+        <p className="text-gray-300 mt-2">
+          {selectedPlan === 'pro' 
+            ? 'Create your Pro account to access unlimited signals'
+            : selectedPlan === 'edge'
+            ? 'Create your Edge+ account for advanced trading intelligence'
+            : 'Create your account to access AI-powered trading signals'}
         </p>
       </div>
       
-      <RegisterForm />
+      <RegisterForm selectedPlan={selectedPlan} />
       
       <div className="mt-6 text-center">
-        <p className="text-foreground/70">
+        <p className="text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline">
+          <Link to="/login" className="text-[#0EA5E9] hover:underline">
             Sign in
           </Link>
         </p>

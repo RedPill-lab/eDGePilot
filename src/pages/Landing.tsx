@@ -5,6 +5,13 @@ import {
 } from 'lucide-react';
 
 const Landing = () => {
+  const handleUpgrade = (plan: 'pro' | 'edge') => {
+    // Store the selected plan in localStorage for the registration flow
+    localStorage.setItem('selectedPlan', plan);
+    // Navigate to register with plan parameter
+    window.location.href = `/register?plan=${plan}`;
+  };
+
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
       {/* Hero Section */}
@@ -377,7 +384,10 @@ const Landing = () => {
                 <button className="w-full py-3 px-4 border border-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/10 transition-colors">
                   Try 7 Days for $5 →
                 </button>
-                <button className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors">
+                <button 
+                  onClick={() => handleUpgrade('pro')}
+                  className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors"
+                >
                   Upgrade to Pro
                 </button>
                 <p className="text-center text-sm text-gray-400">
@@ -427,7 +437,10 @@ const Landing = () => {
                 </li>
               </ul>
 
-              <button className="w-full py-3 px-4 bg-[#F59E0B] rounded-lg text-white font-medium hover:bg-[#F59E0B]/90 transition-colors">
+              <button 
+                onClick={() => handleUpgrade('edge')}
+                className="w-full py-3 px-4 bg-[#F59E0B] rounded-lg text-white font-medium hover:bg-[#F59E0B]/90 transition-colors"
+              >
                 Upgrade to Edge+
               </button>
             </div>
