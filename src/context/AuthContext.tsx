@@ -46,7 +46,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
+      }
+      
       return data;
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -59,32 +63,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return {
       ...sessionUser,
       profile: userProfile,
-      name: sessionUser.user_metadata?.full_name || 'User',
-      plan: userProfile?.plan || 'starter',
+      name: sessionUser.user_metadata?.full_name || sessionUser.email?.split('@')[0] || 'User',
+      plan: (userProfile?.plan as PlanType) || 'starter',
       signalsRemaining: userProfile?.plan === 'starter' ? DEFAULT_SIGNALS : Infinity
     };
   };
 
   // Initialize auth state
   useEffect(() => {
+    let mounted = true;
+
     const initAuth = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) throw sessionError;
         
-        if (session?.user) {
+        if (session?.user && mounted) {
           const userProfile = await fetchProfile(session.user.id);
           const enhancedUser = createEnhancedUser(session.user, userProfile);
           setUser(enhancedUser);
           setProfile(userProfile);
+        } else if (mounted) {
+          setUser(null);
+          setProfile(null);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
-        setUser(null);
-        setProfile(null);
+        if (mounted) {
+          setUser(null);
+          setProfile(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -93,9 +106,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_OUT') {
+        if (!mounted) return;
+
+        if (event === 'SIGNED_OUT' || !session) {
           setUser(null);
           setProfile(null);
+          setIsLoading(false);
           return;
         }
 
@@ -111,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -173,7 +190,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -182,8 +198,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       setError('Sign out failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
