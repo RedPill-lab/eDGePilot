@@ -330,12 +330,17 @@ const Landing = () => {
                 </li>
               </ul>
 
-              <button className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors mb-2">
-                Try 7 Days for $5 →
-              </button>
-              <p className="text-center text-sm text-gray-400">
-                or save 15% yearly ($970/year)
-              </p>
+              <div className="space-y-2">
+                <button className="w-full py-3 px-4 bg-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/90 transition-colors">
+                  Try 7 Days for $5 →
+                </button>
+                <button className="w-full py-3 px-4 border border-[#0EA5E9] rounded-lg text-white font-medium hover:bg-[#0EA5E9]/10 transition-colors">
+                  Upgrade to Pro+
+                </button>
+                <p className="text-center text-sm text-gray-400">
+                  or save 15% yearly ($970/year)
+                </p>
+              </div>
             </div>
 
             {/* Edge+ Plan */}
