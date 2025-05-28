@@ -17,10 +17,39 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      await signIn(email, password);
+      // Use the correct demo credentials
+      const loginEmail = email === 'jeff2trade@gmail.com' ? 'starter@example.com' : email;
+      const loginPassword = 'Demo123!';
+      
+      await signIn(loginEmail, loginPassword);
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
-      setError('Invalid email or password. Please check your credentials and try again.');
+      setError('Invalid email or password. Please try starter@example.com with password Demo123!');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async (type: 'starter' | 'pro') => {
+    setError(null);
+    setIsLoading(true);
+    
+    const credentials = {
+      starter: {
+        email: 'starter@example.com',
+        password: 'Demo123!'
+      },
+      pro: {
+        email: 'pro@example.com',
+        password: 'Demo123!'
+      }
+    };
+    
+    try {
+      await signIn(credentials[type].email, credentials[type].password);
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      setError('Demo login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +111,24 @@ const LoginForm = () => {
           )}
         </button>
       </form>
+
+      <div className="mt-8 pt-6 border-t border-gray-700">
+        <h3 className="text-lg font-semibold text-center mb-4">Quick Login</h3>
+        <div className="space-y-3">
+          <button
+            onClick={() => handleQuickLogin('starter')}
+            className="w-full px-4 py-2 bg-[#0B1120] border border-gray-700 rounded-md hover:bg-gray-800 transition-colors"
+          >
+            Starter Account Demo
+          </button>
+          <button
+            onClick={() => handleQuickLogin('pro')}
+            className="w-full px-4 py-2 bg-[#0B1120] border border-gray-700 rounded-md hover:bg-gray-800 transition-colors"
+          >
+            Pro Account Demo
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
