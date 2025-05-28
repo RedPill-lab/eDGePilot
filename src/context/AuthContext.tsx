@@ -11,6 +11,9 @@ type Profile = {
 
 type AuthUser = User & {
   profile?: Profile;
+  name: string;
+  plan: PlanType;
+  signalsRemaining: number;
 };
 
 type AuthContextType = {
@@ -25,6 +28,8 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const DEFAULT_SIGNALS = 5;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -49,6 +54,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Create enhanced user object with required properties
+  const createEnhancedUser = (sessionUser: User, userProfile: Profile | null) => {
+    return {
+      ...sessionUser,
+      profile: userProfile,
+      name: sessionUser.user_metadata?.full_name || 'User',
+      plan: userProfile?.plan || 'starter',
+      signalsRemaining: userProfile?.plan === 'free' ? DEFAULT_SIGNALS : Infinity
+    } as AuthUser;
+  };
+
   // Handle auth state reset
   const resetAuthState = () => {
     setUser(null);
@@ -69,7 +85,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
-          setUser({ ...session.user, profile });
+          const enhancedUser = createEnhancedUser(session.user, profile);
+          setUser(enhancedUser);
           setProfile(profile);
         } else {
           resetAuthState();
@@ -102,7 +119,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           if (session?.user) {
             const profile = await fetchProfile(session.user.id);
-            setUser({ ...session.user, profile });
+            const enhancedUser = createEnhancedUser(session.user, profile);
+            setUser(enhancedUser);
             setProfile(profile);
           } else {
             resetAuthState();
@@ -129,8 +147,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
         async (payload) => {
           if (payload.new && user) {
-            setProfile(payload.new as Profile);
-            setUser(prev => prev ? { ...prev, profile: payload.new as Profile } : null);
+            const newProfile = payload.new as Profile;
+            setProfile(newProfile);
+            setUser(prev => prev ? createEnhancedUser(prev, newProfile) : null);
           }
         }
       )
@@ -155,7 +174,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data.user) {
         const profile = await fetchProfile(data.user.id);
-        setUser({ ...data.user, profile });
+        const enhancedUser = createEnhancedUser(data.user, profile);
+        setUser(enhancedUser);
         setProfile(profile);
       }
     } catch (err) {
@@ -183,7 +203,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data.user) {
         const profile = await fetchProfile(data.user.id);
-        setUser({ ...data.user, profile });
+        const enhancedUser = createEnhancedUser(data.user, profile);
+        setUser(enhancedUser);
         setProfile(profile);
       }
     } catch (err) {
